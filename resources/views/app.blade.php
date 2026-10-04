@@ -551,7 +551,6 @@ function formatUkuran(byte) {
 
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
-      const infoEl = document.getElementById('ep-foto-info');
       const hapusBtn = document.getElementById('ep-hapus-foto');
 
       // Memilih berkas baru membatalkan penanda hapus yang sebelumnya aktif.
@@ -561,21 +560,13 @@ function formatUkuran(byte) {
       previewImg.src = URL.createObjectURL(file);
       previewImg.classList.remove('hidden');
       previewIcon.classList.add('hidden');
-      if (infoEl) infoEl.innerText = 'Memproses foto...';
 
       uploadedFotoProses = kompresGambar(file)
         .then((hasil) => hasilKeDataUrl(hasil).then((dataUrl) => {
           uploadedFotoDataUrl = dataUrl;
-          if (infoEl) {
-            infoEl.innerText = 'Akan dikirim ' + formatUkuran(hasil.size) +
-              ' (dari ' + formatUkuran(file.size) + ')';
-          }
         }))
         .catch(() => hasilKeDataUrl(file).then((dataUrl) => {
           uploadedFotoDataUrl = dataUrl;
-          if (infoEl) {
-            infoEl.innerText = formatUkuran(file.size) + ' (tidak dikompres)';
-          }
         }));
     }
 
@@ -588,7 +579,6 @@ function formatUkuran(byte) {
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
       const inputFoto = document.getElementById('ep-upload-foto');
-      const infoEl = document.getElementById('ep-foto-info');
       const hapusBtn = document.getElementById('ep-hapus-foto');
 
       fotoProfilDihapus = true;
@@ -602,7 +592,6 @@ function formatUkuran(byte) {
       }
       if (previewIcon) previewIcon.classList.remove('hidden');
       if (hapusBtn) hapusBtn.classList.add('hidden');
-      if (infoEl) infoEl.innerText = 'Foto akan dihapus saat profil disimpan';
     }
 
     function applyUserProfileImage(photoUrl) {
@@ -1162,12 +1151,10 @@ function formatUkuran(byte) {
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
       const inputFoto = document.getElementById('ep-upload-foto');
-      const infoFoto = document.getElementById('ep-foto-info');
       const hapusFoto = document.getElementById('ep-hapus-foto');
 
       // Bersihkan sisa pilihan berkas dari kunjungan sebelumnya.
       if (inputFoto) inputFoto.value = '';
-      if (infoFoto) infoFoto.innerText = 'Pilih berkas gambar JPG/PNG';
       uploadedFotoProses = null;
       fotoProfilDihapus = false;
 
