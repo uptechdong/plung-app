@@ -1,51 +1,15 @@
-﻿{{--
-  ============================================================================
-  RANGKA UTAMA APLIKASI PLUNG!
-  ============================================================================
-
-  File ini hanya kerangka (rangka halaman + urutan @include). Isi tiap bagian
-  dipisah ke file sendiri supaya mudah dibaca dan dirawat:
-
-    partials/layout/    head, sidebar, topbar
-    partials/modal/     4 modal (login, notifikasi, detail setoran, kelola warga)
-    partials/halaman/   12 halaman aplikasi, satu file per halaman
-
-  Footer aplikasi sengaja tetap inline di file ini (sebelum penutup </main>),
-  tidak dipisah ke partial, karena isinya satu blok statis tanpa logika.
-
-  Untuk mengubah tampilan, buka file yang relevan di folder partials --
-  tidak perlu lagi menggulir satu file 3.000 baris.
-
-  CATATAN PENTING
-  --------------
-  JavaScript di bawah masih menyatu dalam satu blok <script> SENGAJA.
-  19 fungsi (navigate, setLoginTab, konfirmasiTukarPoin, dan lainnya) dipanggil
-  langsung dari atribut onclick= di HTML, jadi WAJIB tetap berada di lingkup
-  global. Memecahnya menjadi ES module akan membuatnya tidak global dan seluruh
-  aplikasi ikut rusak. Karena itu HTML boleh dipecah, JS belum.
-  ============================================================================
---}}
 @include('app.partials.layout.head')
 
-{{-- ======================= MODAL ======================= --}}
 @include('app.partials.modal.modal-login')
 @include('app.partials.modal.modal-notifikasi')
 @include('app.partials.modal.modal-detail-setoran')
 @include('app.partials.modal.modal-warga')
 
-{{-- ==================== LAYOUT DASHBOARD ==================== --}}
-  <!-- ================= 5. LAYOUT DASHBOARD UTAMA ================= -->
   <div id="main-app" class="max-w-[1600px] mx-auto min-h-screen flex flex-col flex-1 w-full hidden">
     
     <div class="flex-1 flex flex-col lg:flex-row">
-      {{-- Latar gelap di belakang drawer. Hanya muncul di layar kecil
-           (di desktop sidebar selalu terlihat, jadi tidak perlu). --}}
       <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden" onclick="tutupSidebar()" aria-hidden="true"></div>
 
-      <!-- SIDEBAR NAVIGASI
-           Di layar kecil (below lg) sidebar jadi drawer: keluar canvas di kiri
-           dan dibuka lewat tombol titik tiga. Di layar lebar kembali seperti
-           semula, menempel di samping konten. -->
       <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] -translate-x-full lg:static lg:translate-x-0 lg:z-auto lg:w-64 lg:max-w-none bg-white dark:bg-darkcard border-r border-slate-200/70 dark:border-emerald-900/60 p-5 flex flex-col justify-between shrink-0 overflow-y-auto transition-transform duration-300 ease-out">
         <div class="space-y-6">
           
@@ -57,27 +21,22 @@
               <span class="font-black text-2xl tracking-tight text-slate-900 dark:text-white block leading-tight">PLUNG!</span>
             </div>
 
-            {{-- Tombol tutup, hanya untuk drawer di layar kecil. --}}
             <button type="button" onclick="tutupSidebar()" class="lg:hidden ml-auto p-2 -mr-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-emerald-200 dark:hover:bg-brand-950 transition-colors" aria-label="Tutup menu">
               <i data-lucide="x" class="w-5 h-5"></i>
             </button>
           </div>
 
-          {{-- Menu navigasi. Satu file per kelompok agar mudah dirawat. --}}
-@include('app.partials.layout.sidebar-warga')
+          @include('app.partials.layout.sidebar-warga')
 @include('app.partials.layout.sidebar-pengurus')
         </div>
       </aside>
 
 
-      <!-- KONTEN UTAMA -->
       <main class="flex-1 p-5 lg:p-8 space-y-6 overflow-y-auto flex flex-col justify-between">
         
         <div class="space-y-6">
   @include('app.partials.layout.topbar')
 
-            {{-- ============ HALAMAN APLIKASI ============
-                 12 halaman, satu file per halaman. --}}
             @include('app.partials.halaman.dashboard-warga')
             @include('app.partials.halaman.dashboard-rt')
             @include('app.partials.halaman.setor')
@@ -92,7 +51,6 @@
             @include('app.partials.halaman.laporan')
         </div>
 
-        <!-- FOOTER APLIKASI -->
         <footer class="pt-8 pb-3 text-center border-t border-slate-200/50 dark:border-emerald-900/40 text-[11px] font-semibold text-slate-400 dark:text-emerald-400">
           PLUNG! © 2026 Sistem Pemilahan Sampah Mandiri. All rights reserved
         </footer>
@@ -103,45 +61,22 @@
   </div>
 
 
-  <!-- LAYAR BOOT
-       Tampil sampai session check selesai. Sebelumnya halaman login langsung
-       terlihat di frame pertama (auth-screen tidak punya class hidden),
-       lalu ikut disembunyikan setelah /me dijawab. Akibatnya setiap refresh
-       selalu kedip lewat form login walaupun token masih valid.
-       Layar ini menggantikan kilat tersebut. -->
   <div id="boot-screen" class="fixed inset-0 z-[60] bg-slate-50 dark:bg-brand-950 flex flex-col items-center justify-center gap-4">
     <div class="w-10 h-10 rounded-full border-4 border-slate-200 dark:border-brand-900 border-t-brand-600 animate-spin"></div>
     <p class="text-xs font-bold text-slate-400 dark:text-emerald-400 tracking-wide">Memuat data...</p>
   </div>
 
 
-  <!-- JAVASCRIPT SYSTEM ENGINE -->
   <script>
-    // Panggil dalam try/catch. Kalau CDN lucide gagal dimuat, seluruh
-    // script tidak boleh ikut mati karena pemanggilan ini ada di baris
-    // pertama sebelum semua fungsi didefinisikan.
     function renderIkon() {
       try {
         if (window.lucide) window.lucide.createIcons();
-      } catch (e) { /* ikon tidak kritis, abaikan */ }
+      } catch (e) { }
     }
     renderIkon();
 
-    // Script CDN memakai defer, jadi lucide belum tersedia saat baris di atas
-    // berjalan. Sekali semua resource selesai dimuat (event "load"), gambar
-    // ulang ikonnya supaya tidak ada area kosong berganti '<i>' mentah.
     window.addEventListener('load', renderIkon);
 
-    // Jaring pengaman untuk layar boot (lihat #boot-screen di markup).
-    //
-    // Layar boot menutupi seluruh layar, jadi kalau karena satu dan lain hal
-    // checkSession() tidak sempat selesai -- misalnya ada error di kode yang
-    // dieksekusi sebelum IIFE di bawah -- pengguna akan terjebak menatap
-    // spinner selamanya tanpa tombol logout pun, karena kerangka aplikasi
-    // tidak pernah ditampilkan.
-    //
-    // Satu timeout ini menutup celah tersebut: apa pun yang terjadi, maksimal
-    // 8 detik layar boot pasti hilang.
     setTimeout(function () {
       const boot = document.getElementById('boot-screen');
       if (boot && !boot.classList.contains('hidden')) {
@@ -150,7 +85,6 @@
       }
     }, 8000);
 
-    // API Configuration
     const API_BASE_URL = '/api';
     let authToken = localStorage.getItem('plung_token') || null;
     
@@ -158,14 +92,8 @@
     let activeLoginTab = 'warga';
     let currentUserSession = null;
     let uploadedFotoDataUrl = null;
-    // Promise kompresi foto profil yang sedang berjalan. Disimpan supaya
-    // simpanProfil bisa menunggu selesai sebelum mengirim, supaya foto mentah
-    // tidak ikut terkirim saat user menekan tombol dengan cepat.
     let uploadedFotoProses = null;
 
-    // Hasil kompresi foto setoran, null = belum siap atau kompresi gagal.
-    // Disimpan terpisah dari Promise-nya supaya handleSubmitSetoran tahu
-    // berkas mana yang harus dikirim.
     let setorFotoSiap = null;
     let setorFotoProses = null;
     let previousActivePage = 'dashboard-warga';
@@ -176,39 +104,24 @@
     let chartTrenRTInstance = null;
     let chartKomposisiRTInstance = null;
 
-    // Data arrays
     let listWarga = [];
     let katalogRewards = [];
-    // False saat daftar hadiah sedang dimuat ulang dari database. dipakai
-    // agar tombol Edit/Hapus tidak diklik pada data yang sudah basi.
     let rewardsLoaded = false;
-    // Nomor urut permintaan daftar hadiah. Hanya respons terbaru yang boleh
-    // menulis ke katalogRewards, supaya respons lama yang baru sampai tidak
-    // bisa menimpa data hasil edit/hapus (race condition).
     let rewardsFetchSeq = 0;
-  // Jumlah permintaan /rewards yang sedang berjalan. Dipakai supaya
-  // penyegaran otomatis tidak menumpuk permintaan.
   let muatHadiahAktif = 0;
-    // Nomor urut yang sama untuk daftar kupon verifikasi.
     let kuponFetchSeq = 0;
     let verifikasiPending = [];
-    // Nomor urut permintaan untuk daftar warga & antrean verifikasi. Pola yang
-    // sama seperti rewardsFetchSeq: kalau pengguna menekan menu berkali-kali
-    // dengan cepat, hanya respons TERBARU yang boleh menulis ke state, supaya
-    // respons lama yang telat datang tidak menimpa data yang lebih baru.
     let wargaFetchSeq = 0;
     let verifikasiFetchSeq = 0;
     let listKuponVerifikasi = [];
     let listKategoriSampah = [];
 
-    // API Helper with auth token
     async function apiFetch(url, options = {}) {
       const headers = {
         'Accept': 'application/json',
         ...options.headers
       };
       
-      // Only set Content-Type for non-FormData requests
       if (!(options.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
       }
@@ -226,8 +139,6 @@
         throw new Error('Gagal terhubung ke server.');
       }
 
-      // 401 pada endpoint /login berarti kombinasi username/password salah,
-      // BUKAN sesi berakhir. Jangan logout (dan jangan tukar pesannya) di sini.
       if (response.status === 401 && authToken && url !== '/login') {
         localStorage.removeItem('plung_token');
         authToken = null;
@@ -235,7 +146,6 @@
         throw new Error('Sesi berakhir');
       }
 
-      // Respons mungkin bukan JSON (mis. halaman error server).
       let data;
       try {
         data = await response.json();
@@ -243,15 +153,12 @@
         throw new Error('Respons server tidak valid.');
       }
 
-      // Status HTTP gagal HARUS dilempar, kalau tidak UI akan menampilkan
-      // "berhasil" padahal data tidak tersimpan di database.
       if (!response.ok) {
         const err = new Error(apiErrorMessage(data, response.status));
         err.status = response.status;
         throw err;
       }
 
-      // Backend bisa balas 200 tapi success:false (mis. stok habis).
       if (data && data.success === false) {
         const err = new Error(data.message || 'Permintaan gagal diproses.');
         err.status = response.status;
@@ -261,13 +168,7 @@
       return data;
     }
 
-    /**
-     * Ambil pesan error yang bisa ditampilkan ke user dari respons API.
-     */
     function apiErrorMessage(data, status) {
-      // Pesan validasi bawaan Laravel berbahasa Inggris dan menyebut angka
-      // dalam kilobyte ("must not be greater than 2048 kilobytes"). Ganti
-      // untuk field foto dengan kalimat yang bisa langsung dipahami warga.
       if (data && data.errors && Array.isArray(data.errors.foto)) {
         const pesanFoto = String(data.errors.foto[0] || '');
         if (/greater than|max:/i.test(pesanFoto)) {
@@ -287,8 +188,6 @@
       }
 
       if (data && data.message) {
-        // Pesan validasi bawaan Laravel ("validation.required") kurang
-        // informatif, ganti pakai kalimat yang dimengerti user.
         if (String(data.message).startsWith('validation.')) {
           return 'Periksa kembali isian formulir Anda.';
         }
@@ -302,14 +201,8 @@
       return 'Terjadi kesalahan pada server.';
     }
 
-    // Initialize data from API
     async function loadInitialData() {
       try {
-        // Warga tidak pernah memakai daftar warga, antrean verifikasi, maupun
-        // kupon -- semuanya milik menu Secretariat. Hanya katalog hadiah yang
-        // dipakai (menu Tukar Poin). Fetch 4 endpoint untuk semua role membuat
-        // boot warga jauh lebih lambat, terutama di `php artisan serve` yang
-        // memproses request satu per satu sehingga request paralel jadi antre.
         const adalahPengurus = currentUserSession && currentUserSession.role === 'pengurus';
 
         const [wargaRes, rewardsRes, verifRes, kuponRes] = await Promise.all([
@@ -322,14 +215,11 @@
         if (wargaRes && wargaRes.data) listWarga = wargaRes.data;
         if (rewardsRes && rewardsRes.data) {
           katalogRewards = rewardsRes.data;
-          // Tandai data sudah siap, supaya editReward/hapusReward tidak
-          // menunggu loadRewards() yang tidak perlu dipanggil lagi.
           rewardsLoaded = true;
         }
         if (verifRes && verifRes.data) verifikasiPending = verifRes.data;
         if (kuponRes && kuponRes.data) listKuponVerifikasi = kuponRes.data;
         
-        // Update badge counts
         const antreanEl = document.getElementById('antrean-verifikasi-count');
         if (antreanEl) antreanEl.innerText = verifikasiPending.length;
         const badgeEl = document.getElementById('badge-pending-count');
@@ -343,54 +233,33 @@
       }
     }
 
-    // Muat ulang daftar hadiah dari database (dipakai sebelum buka menu
-    // Edit Katalog Hadiah & Tukar Poin supaya data selalu sinkron).
     async function loadRewards() {
       rewardsLoaded = false;
       muatHadiahAktif++;
-      // Nomor urut permintaan ini. Permintaan sebelumnya yang belum selesai
-      // otomatis dianggap basi dan hasilnya dibuang.
       const seq = ++rewardsFetchSeq;
       try {
         const res = await apiFetch('/rewards');
 
-        // Ada permintaan lebih baru yang sudah jalan -- jangan timpa
-        // datanya dengan hasil lama ini.
         if (seq !== rewardsFetchSeq) return;
 
         if (res.data) {
           katalogRewards = res.data;
           updatePoinDisplay();
 
-          // Render SETELAH data sampai, supaya tidak sempat menggambar
-          // daftar dari data lama yang sudah tidak ada di database.
-          // KEDUA list dirender tanpa syarat halaman aktif, supaya halaman
-          // Edit Katalog Hadiah (petugas) dan Penukaran Poin (warga) selalu
-          // menampilkan katalog yang sama meski salah satunya sedang tersembunyi.
           renderRewardPengurusList();
           renderKatalogWarga();
         }
       } catch (err) {
         console.warn('Gagal memuat katalog hadiah:', err);
       } finally {
-        // Hanya permintaan terakhir yang berhak menandai data sudah ready.
         if (seq === rewardsFetchSeq) rewardsLoaded = true;
         muatHadiahAktif--;
       }
     }
 
-    // ---- Penyegaran katalog hadiah otomatis ----
-    // Aplikasi ini SPA: tab yang dibiarkan terbuka tidak pernah memuat ulang
-    // dokumen, sehingga katalognya bisa tertinggal dari perubahan di sesi
-    // lain. Akibatnya Edit Katalog Hadiah (petugas) dan Penukaran Poin (warga)
-    // terlihat berbeda padahal datanya sama. Karena itu katalog disegarkan:
-    //   1) saat tab kembali terlihat / jendela difokuskan / dipulihkan,
-    //   2) secara berkala selama salah satu dari dua halaman itu terbuka.
     let segarkanKatalogTerakhir = 0;
     function segarkanKatalog(paksa) {
       if (currentActivePageId !== 'kelola-reward' && currentActivePageId !== 'tukar') return;
-      // Jangan menumpuk permintaan kalau sedang ada yang jalan, misalnya
-      // ketika petugas sedang menyimpan hadiah.
       if (muatHadiahAktif > 0) return;
       const sekarang = Date.now();
       if (!paksa && sekarang - segarkanKatalogTerakhir < 15000) return;
@@ -427,8 +296,6 @@
         const opt = document.createElement('option');
         opt.value = k.id;
         opt.textContent = `${k.nama} - ${k.poin_per_unit} Poin/${k.satuan}`;
-        // Disimpan di option supaya form bisa menyesuaikan satuan & menghitung
-        // estimasi poin tanpa perlu fetch ulang.
         opt.dataset.satuan = k.satuan;
         opt.dataset.poinPerUnit = k.poin_per_unit;
         opt.dataset.satuanOpsi = JSON.stringify(k.satuan_opsi || [k.satuan]);
@@ -449,7 +316,6 @@
       const opt = selectKategori.options[selectKategori.selectedIndex];
       const kategori = opt && opt.value ? listKategoriSampah.find(k => String(k.id) === String(opt.value)) : null;
 
-      // Opsi satuan mengikuti kategori. Default: satuan dasar kategori.
       const opsi = kategori ? (kategori.satuan_opsi || [kategori.satuan]) : ['Kg', 'Gram'];
       const sebelumnya = selectSatuan.value;
       selectSatuan.innerHTML = opsi.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -459,20 +325,12 @@
         selectSatuan.value = opsi[0];
       }
 
-      // Dropdown satuan disembunyikan kalau cuma ada satu pilihan (B3 -> Unit).
-      // Menampilkan dropdown yang isinya cuma satu opsi hanya menambah klik
-      // tanpa memberi pilihan apa pun. Satuannya sudah jelas dari judul kolom
-      // ("Jumlah Unit") dan placeholder, jadi tidak ada informasi yang hilang.
-      // Kolom inputnya tetap `flex-1`, jadi otomatis melebar penuh.
       if (opsi.length > 1) {
         selectSatuan.classList.remove('hidden');
       } else {
         selectSatuan.classList.add('hidden');
       }
 
-      // Judul kolom dan placeholder ikut menyesuaikan. B3 dihitung per Unit,
-      // bukan per kilogram, jadi menulis "Jumlah Berat" dan "Masukkan berat
-      // sampah" di sana akan membuat warga mengira yang diminta kilo.
       const dasarKg = kategori ? String(kategori.satuan).toLowerCase() === 'kg' : true;
       if (labelJumlah) {
         labelJumlah.innerText = dasarKg ? 'Jumlah Berat' : 'Jumlah ' + (kategori ? kategori.satuan : '');
@@ -481,8 +339,6 @@
         ? 'Masukkan berat sampah'
         : 'Masukkan jumlah ' + String(kategori ? kategori.satuan : '').toLowerCase();
 
-      // Kolom poin selalu ditulis ulang, supaya tidak pernah menyisakan angka
-      // dari kategori atau satuan sebelumnya.
       const tulisPoin = (nilai) => { if (kolomPoin) kolomPoin.value = nilai; };
 
       if (!kategori) {
@@ -504,7 +360,6 @@
       tulisPoin(String(poin));
     }
 
-    /* ================= FUNGSI SEARCH UNIVERSAL ================= */
     function handleGlobalSearch(query) {
       const q = query.toLowerCase().trim();
       
@@ -532,7 +387,6 @@
       }
     }
 
-    // Memunculkan/menghapus baris "Data tidak ditemukan" pada sebuah tbody.
     function setFilterEmptyState(tbodyId, visibleCount, keyword) {
       const tbody = document.getElementById(tbodyId);
       if (!tbody) return;
@@ -550,11 +404,6 @@
       }
     }
 
-    // Halaman dengan dua tampilan dari data yang sama: tabel (tablet/desktop)
-    // dan kartu (HP). Keduanya harus disaring bersamaan, kalau tidak kartu di
-    // HP akan tetap menampilkan semua data walau tabelnya sudah tersaring.
-    // Tabel disembunyikan di HP dan kartu disembunyikan di tablet, jadi tiap
-    // tampilan juga butuh pesan "tidak ditemukan" sendiri.
     function filterDualView(tbodyId, cardSelector, cardWrapId, msgId, keyword, emptyText) {
       const rows = document.querySelectorAll('#' + tbodyId + ' tr:not(.no-search-results-row):not(.empty-state-row)');
       const cards = document.querySelectorAll(cardSelector);
@@ -632,16 +481,6 @@
       }
     }
 
-    // ---------------------------------------------------------------------
-// KOMPRESI GAMBAR DI BROWSER
-// ---------------------------------------------------------------------
-// Foto dari kamera HP sekarang berukuran 3-8 MB, sedangkan batas upload
-// server 3 MB. Mengirim file mentah hampir selalu gagal untuk foto kamera.
-// Jadi gambar dikompres dulu di browser: sisi terpanjang dibatasi 1280px
-// lalu di-encode ulang jadi JPEG. Foto 5 MB biasanya turun jadi 150-300 KB,
-// cukup jelas untuk bukti sampah, dan jauh lebih cepat di jaringan seluler.
-//
-// Mengembalikan Promise<File>. Berkas asli tidak diubah.
 function kompresGambar(file, maksSisi = 1280, kualitas = 0.82) {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith('image/')) {
@@ -655,8 +494,6 @@ function kompresGambar(file, maksSisi = 1280, kualitas = 0.82) {
     img.onload = () => {
       URL.revokeObjectURL(url);
 
-      // Hanya diperkecil. Foto kecil dikirim apa adanya supaya tidak
-      // menjadi lebih buruk dari aslinya.
       const sisiTerpanjang = Math.max(img.width, img.height);
       const skala = sisiTerpanjang > maksSisi ? maksSisi / sisiTerpanjang : 1;
       const lebar = Math.max(1, Math.round(img.width * skala));
@@ -669,8 +506,6 @@ function kompresGambar(file, maksSisi = 1280, kualitas = 0.82) {
       const ctx = canvas.getContext('2d');
       if (!ctx) { reject(new Error('Browser tidak mendukung canvas.')); return; }
 
-      // Isi latar putih dulu. Tanpa ini, foto PNG yang tembus transparan
-      // akan berubah menjadi kotak hitam begitu diubah ke JPEG.
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, lebar, tinggi);
       ctx.imageSmoothingEnabled = true;
@@ -686,9 +521,6 @@ function kompresGambar(file, maksSisi = 1280, kualitas = 0.82) {
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      // HEIC dari iPhone kadang tidak bisa di-decode browser. Penanggil
-      // memakai berkas mentah sebagai cadangan dan membiarkan validasi
-      // server yang memutuskan.
       reject(new Error('Gambar tidak bisa diproses oleh browser.'));
     };
 
@@ -712,9 +544,6 @@ function formatUkuran(byte) {
   return (byte / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-    // Foto profil dikirim sebagai base64 di dalam JSON (lihat simpanProfil).
-    // Base64 menambah ukuran sekitar 33%, jadi foto 5 MB menjadi 6,7 MB di
-    // payload. Karena itu foto dikompres lebih dulu di browser.
     function previewUploadedFoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -723,15 +552,11 @@ function formatUkuran(byte) {
       const previewIcon = document.getElementById('ep-preview-icon');
       const infoEl = document.getElementById('ep-foto-info');
 
-      // Preview berkas mentah supaya responsif; kompresi jalan di belakang.
       previewImg.src = URL.createObjectURL(file);
       previewImg.classList.remove('hidden');
       previewIcon.classList.add('hidden');
       if (infoEl) infoEl.innerText = 'Memproses foto...';
 
-      // uploadedFotoProses menyimpan Promise-nya supaya simpanProfil bisa
-      // menunggu hasil kompresi sebelum mengirim. Kalau user menekan tombol
-      // ganti berkas, proses yang lebih baru menimpa yang lama.
       uploadedFotoProses = kompresGambar(file)
         .then((hasil) => hasilKeDataUrl(hasil).then((dataUrl) => {
           uploadedFotoDataUrl = dataUrl;
@@ -741,8 +566,6 @@ function formatUkuran(byte) {
           }
         }))
         .catch(() => hasilKeDataUrl(file).then((dataUrl) => {
-          // Kompresi gagal (mis. HEIC): pakai berkas mentah apa adanya,
-          // validasi server yang akan menolak kalau kelewat besar.
           uploadedFotoDataUrl = dataUrl;
           if (infoEl) {
             infoEl.innerText = formatUkuran(file.size) + ' (tidak dikompres)';
@@ -789,24 +612,11 @@ function formatUkuran(byte) {
       }
     });
 
-    /**
-     * Perbarui seluruh penulisan saldo poin di seluruh halaman.
-     *
-     * Menu "Tukar Poin" SENGAJA tidak pernah dikunci, berapa pun saldo poin
-     * warga. Alasannya, halaman katalog sudah menampilkan harga tiap hadiah dan
-     * konfirmasiTukarPoin() yang menjelaskan berapa poin yang kurang kalau
-     * warga tetap menekan tombol Tukar. Menu yang mati justru menutup informasi
-     * yang justru dicari warga, tanpa memberi jalan keluar.
-     */
     function updatePoinDisplay() {
       document.querySelectorAll('.user-poin-val').forEach(el => {
         el.innerText = userPoin;
       });
 
-      // Class nav-tukar dan banner-btn-tukar sengaja tidak disentuh di sini.
-      // Jangan menambahkan `cursor-not-allowed` pada keduanya: navigate() memakai
-      // class itu untuk menentukan menu aktif, sehingga menu yang terkunci juga
-      // gagal menampilkan tanda aktifnya.
     }
 
     function setLoginTab(role) {
@@ -833,9 +643,6 @@ function formatUkuran(byte) {
         const res = await apiFetch('/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // Kirim tab yang sedang aktif. Backend memakai role ini untuk
-          // membatasi login, jadi warga yang menyamar lewat tab
-          // "Pengurus RT" akan ditolak.
           body: JSON.stringify({ username: user, password: pass, role: activeLoginTab })
         });
 
@@ -859,18 +666,11 @@ function formatUkuran(byte) {
         card.classList.remove('animate-shake');
         void card.offsetWidth;
         card.classList.add('animate-shake');
-        // Tampilkan pesan asli dari server, mis. "Username atau password yang
-        // Anda masukkan salah." Pesan jaringan generik hanya untuk kegagalan
-        // jaringan yang sebenarnya (apiFetch sudah merapikannya).
         showModernModal('login-failed', 'Login Gagal',
           (err && err.message) ? err.message : 'Terjadi kesalahan jaringan. Silakan coba lagi.');
       }
     }
 
-    // Satu tempat untuk berpindah antara tiga tampilan: boot, login, dan aplikasi.
-    // disembunyikan) perlu disembunyikan dari awal supaya tidak pernah
-    // terlihat di frame pertama -- itulah sumber kilat halaman login saat
-    // refresh, karena form login dulu tampil sebagai kondisi awal.
     function tampilkanLogin() {
       const boot = document.getElementById('boot-screen');
       const auth = document.getElementById('auth-screen');
@@ -890,8 +690,6 @@ function formatUkuran(byte) {
     }
 
     async function setupUserSystem() {
-      // Kerangka aplikasi ditampilkan sebelum data dimuat, jadi pengguna
-      // langsung melihat tata letak halaman dan tidak mengira masih loading.
       tampilkanAplikasi();
 
       const navWarga = document.getElementById('nav-group-warga');
@@ -909,8 +707,6 @@ function formatUkuran(byte) {
       nameEl.innerText = currentUserSession.nama;
       dropName.innerText = currentUserSession.nama;
 
-      // Keduanya tidak saling bergantung, jadi jalankan berbaris. Sebelumnya
-      // di-await berurutan, menambah satu putaran penuh (~1 detik) ke boot.
       await Promise.all([loadInitialData(), loadKategoriSampah()]);
 
       if (currentUserSession.role === 'pengurus') {
@@ -941,16 +737,6 @@ function formatUkuran(byte) {
       renderIkon();
     }
 
-    /**
-     * Card "Warga Aktif Pilah Sampah" (Top 3 dengan medali) di dashboard petugas.
-     *
-     * Sumber urutan: TOTAL SAMPAH TERVERIFIKASI (Kg), sama persis dengan
-     * peringkat di dashboard warga. Poin sengaja tidak dipakai karena
-     * naik-turun setiap kali warga menukar hadiah sehingga urutan ikut bergeser
-     * padahal tidak ada sampah baru yang masuk.
-     *
-     * @param {Array} daftar daftar warga; boleh dari /api/warga atau data.top3
-     */
     function renderTop3Warga(daftar) {
       const container = document.getElementById('top-3-warga-container');
       if (!container) return;
@@ -962,15 +748,11 @@ function formatUkuran(byte) {
         .sort((a, b) => {
           const sampahA = Number(a.total_sampah) || 0;
           const sampahB = Number(b.total_sampah) || 0;
-          if (sampahA !== sampahB) return sampahB - sampahA;   // paling banyak di atas
-          return (a.id || 0) - (b.id || 0);                    // pemecah seri: id, stabil
+          if (sampahA !== sampahB) return sampahB - sampahA;
+          return (a.id || 0) - (b.id || 0);
         })
         .slice(0, 3);
 
-      // Siluet medali pita (bukan angka), polos tanpa garis tepi dan tanpa
-      // bayangan. Peringkat tidak lagi ditulis di dalam ikon, tapi tetap
-      // terbaca dari urutan daftar -- yang diurut total sampah -- dan dari
-      // warna emas/perak/perunggu.
       const medalBadges = [
         '<div class="w-8 h-8 flex items-center justify-center shrink-0"><svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4 L20 14 L27 4" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="25" r="11" fill="#F59E0B"/><path d="M20 18.5 L21.9 22.9 L26.5 23.3 L23.1 26.5 L24 31.1 L20 28.8 L16 31.1 L16.9 26.5 L13.5 23.3 L18.1 22.9 Z" fill="#FFFFFF"/></svg></div>',
         '<div class="w-8 h-8 flex items-center justify-center shrink-0"><svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4 L20 14 L27 4" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="25" r="11" fill="#94A3B8"/><path d="M20 18.5 L21.9 22.9 L26.5 23.3 L23.1 26.5 L24 31.1 L20 28.8 L16 31.1 L16.9 26.5 L13.5 23.3 L18.1 22.9 Z" fill="#FFFFFF"/></svg></div>',
@@ -1007,7 +789,6 @@ function formatUkuran(byte) {
         try {
           await apiFetch('/logout', { method: 'POST' });
         } catch (err) {
-          // Ignore logout API errors
         }
         localStorage.removeItem('plung_token');
         authToken = null;
@@ -1019,15 +800,10 @@ function formatUkuran(byte) {
     }
 
     function navigate(pageId) {
-      // Kalau sedang di halaman Edit Katalog Hadiah, kosongkan form agar
-      // id item lama tidak ikut tersimpan saat pindah halaman.
       if (currentActivePageId === 'kelola-reward' && pageId !== 'kelola-reward') {
         resetFormReward();
       }
 
-      // Di layar kecil sidebar berupa drawer yang menutupi konten. Kalau tidak
-      // ditutup di sini, warga menekan menu dan halaman yang terbuka justru
-      // tetap tertutup drawer di atasnya.
       tutupSidebar();
 
       currentActivePageId = pageId;
@@ -1048,10 +824,6 @@ function formatUkuran(byte) {
         target.classList.add('animate-slide-up');
       }
 
-      // Lazy-load data when navigating.
-      // Setiap kali menu dibuka, datanya diambil lagi dari server. Tanpa ini
-      // pengguna harus refresh browser (F5) untuk melihat perubahan yang
-      // dibuat dari halaman atau perangkat lain.
       if (pageId === 'dashboard-warga' && currentUserSession && currentUserSession.role === 'warga') {
         loadDashboardWarga();
       } else if (pageId === 'dashboard-rt' && currentUserSession && currentUserSession.role === 'pengurus') {
@@ -1059,21 +831,12 @@ function formatUkuran(byte) {
       } else if (pageId === 'riwayat') {
         loadRiwayat();
       } else if (pageId === 'verifikasi-kupon') {
-        // Selalu ambil daftar kupon terbaru dari database, supaya kupon
-        // yang baru saja ditukar warga langsung terlihat di halaman ini.
         loadKuponPengurus();
       } else if (pageId === 'daftar-warga') {
-        // Nama, no. rumah, no. WA, dan username bisa berubah kapan saja, jadi
-        // tabel harus di-refresh dari database, bukan mengandalkan hasil
-        // pemuatan saat login.
         loadWarga();
       } else if (pageId === 'verifikasi') {
-        // Antrean setoran terus bertambah dari warga, jadi selalu ambil
-        // yang terbaru. Angka badge di sidebar ikut terupdate lewat
-        // renderVerifikasi() di dalam loader ini.
         loadVerifikasiSetoran();
       } else if (pageId === 'laporan') {
-        // Daftar bulan yang tersedia ikut berubah setiap ada setoran baru.
         loadBulanLaporan();
       }
 
@@ -1083,9 +846,6 @@ function formatUkuran(byte) {
         handleGlobalSearch('');
       }
 
-      // Muat data hadiah SETELAH handleGlobalSearch, karena fungsi search
-      // me-render daftar secara sinkron. loadRewards() memuat ulang dari
-      // database lalu me-render ulang, jadi daftar akhir selalu yang benar.
       if (pageId === 'kelola-reward' || pageId === 'tukar') {
         loadRewards();
       }
@@ -1102,9 +862,6 @@ function formatUkuran(byte) {
       }
     }
 
-    /* ============ BADGE TREN DASHBOARD (WARGA) ============ */
-    // Gaya badge tren diseragamkan untuk card Poin, Sampah, dan Peringkat.
-    // Tren naik = hijau, tren turun = merah, tidak berubah = abu-abu.
     const TREND_BADGE_BASE = 'px-2.5 py-0.5 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800';
     const TREND_BADGE_COLORS = {
       up: 'bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300',
@@ -1114,27 +871,6 @@ function formatUkuran(byte) {
     const CHIP_INFO_BASE = 'text-xs font-extrabold px-3 py-1 rounded-xl text-brand-600 dark:text-brand-300 bg-brand-50 dark:bg-brand-950 border border-transparent dark:border-emerald-800/60';
     const ANGKA_DESIMAL = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 });
 
-    /**
-     * Badge card "Total Poin Saya".
-     *
-     * Satu arah saja, mengikuti pergerakan poin TERAKHIR:
-     *   naik  = setoran yang terakhir diverifikasi petugas
-     *   turun = penukaran hadiah yang terakhir
-     *
-     * Jangan pernah menampilkan dua panah sekaligus. Kalau warga menyetor lalu
-     * menukar hadiah, kartu hanya boleh memuat satu ikon: yang paling baru.
-     * Badge kumulatif (total masuk + total keluar) akan memunculkan dua panah
-     * sekaligus, padahal kartu ini hanya punya satu ruang kecil untuk tren.
-     *
-     * Kalau warga belum pernah punya poin, tidak ada panah sama sekali, hanya
-     * satu pil abu-abu supaya kartu tidak terlihat kosong.
-     *
-     * Badge ini sengaja tanpa tooltip. Atribut `title` bawaan browser hanya
-     * muncul saat mouse diarahkan dan butuh sekitar 1 detik, sedangkan di HP
-     * tidak muncul sama sekali karena tidak ada hover. Memaksakan keterangan
-     * lewat `title` jadi tidak berguna di layar sentuh, jadi informasinya
-     * cukup ditunjukkan lewat ikon dan angkanya saja.
-     */
     function setPoinBadge(trend) {
       const badge = document.getElementById('trend-poin-badge');
       if (!badge) return;
@@ -1163,14 +899,6 @@ function formatUkuran(byte) {
       renderIkon();
     }
 
-    /**
-     * Isi badge tren: ikon naik/turun, warna, dan nilai.
-     *
-     * @param {string} badgeId    id elemen badge
-     * @param {string} dir        'up' | 'down' | 'same'
-     * @param {string} text       teks nilai, mis. '+2', '-1', '0', '+100%'
-     * @param {string} [sameIcon] ikon yang dipakai saat dir = 'same'
-     */
     function setTrendBadge(badgeId, dir, text, sameIcon = 'minus') {
       const badge = document.getElementById(badgeId);
       if (!badge) return;
@@ -1184,9 +912,6 @@ function formatUkuran(byte) {
       renderIkon();
     }
 
-    /**
-     * Isi chip informasi (bukan tren): persentase porsi warga dari total sampah RT.
-     */
     function setInfoChip(badgeId, text) {
       const badge = document.getElementById(badgeId);
       if (!badge) return;
@@ -1201,11 +926,9 @@ function formatUkuran(byte) {
         const data = await apiFetch('/dashboard/warga');
         userPoin = data.poin;
         
-        // Update stat cards
         document.querySelectorAll('.user-poin-val').forEach(el => el.innerText = data.poin);
         document.getElementById('warga-total-sampah').innerText = data.total_sampah;
         
-        // Update peringkat - hanya tampil jika ada poin
         const peringkatEl = document.getElementById('warga-peringkat');
         const totalWargaEl = document.getElementById('warga-total-warga');
         if (data.peringkat !== null && data.peringkat !== undefined) {
@@ -1218,8 +941,6 @@ function formatUkuran(byte) {
             peringkatEl.parentElement.classList.add('hidden');
         }
 
-        // Badge card Poin: satu ikon, mengikuti pergerakan poin terakhir.
-        // naik = setoran terverifikasi, turun = tukar hadiah.
         setPoinBadge(data.trend_poin);
 
         if (data.trend_sampah) {
@@ -1235,17 +956,13 @@ function formatUkuran(byte) {
           setTrendBadge('trend-peringkat-badge', dir, label);
         }
 
-        // Chip persentase kontribusi warga terhadap total sampah RT terkumpul
-        // (bukan tren, jadi tanpa ikon naik/turun)
         if (data.trend_bulanan) {
           setInfoChip('trend-poin-percentage', ANGKA_DESIMAL.format(data.trend_bulanan.value || 0) + '%');
         }
 
-        // Update chart
         initChartBulanan(data.bulanan);
         initChartProporsi(data.proporsi);
 
-        // Update riwayat table + kartu HP
         const tbody = document.getElementById('tbl-dash-warga-body');
         const dashCards = document.getElementById('cards-dash-warga');
         const riwayat = (data.riwayat_terakhir && data.riwayat_terakhir.length > 0) ? data.riwayat_terakhir : [];
@@ -1254,7 +971,6 @@ function formatUkuran(byte) {
           tbody.innerHTML = riwayat.length > 0
             ? riwayat.map(r =>
                 '<tr class="hover:bg-slate-50 dark:hover:bg-brand-950/60 transition-colors">' +
-                  // Semua kolom rata tengah supaya sejajar dengan judulnya.
                   '<td class="py-3 text-center text-slate-400 dark:text-emerald-300">' + r.tanggal + '</td>' +
                   '<td class="py-3 text-center font-extrabold text-slate-900 dark:text-white">' + r.kategori + '</td>' +
                   '<td class="py-3 text-center">' + r.berat + '</td>' +
@@ -1265,11 +981,6 @@ function formatUkuran(byte) {
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada transaksi</td></tr>';
         }
 
-        // Versi kartu untuk layar HP. Susunannya sengaja dibuat sama dengan
-        // kartu di halaman Riwayat (tanggal, poin, lalu detail, lalu badge)
-        // supaya tidak terlihat seperti dua format berbeda untuk data yang
-        // sama. Dibangun dari data yang sama dengan tabel, jadi tidak mungkin
-        // menampilkan angka yang berbeda di antara dua tampilan.
         if (dashCards) {
           dashCards.innerHTML = riwayat.length > 0
             ? riwayat.map(r => {
@@ -1303,7 +1014,6 @@ function formatUkuran(byte) {
         document.getElementById('rt-total-sampah').innerText = data.total_sampah;
         document.getElementById('antrean-verifikasi-count').innerText = data.antrean;
 
-        // Update trend badges
         if (data.trend_warga) {
           document.getElementById('trend-warga-text').innerText = (data.trend_warga.direction === 'up' ? '+' : '') + (data.trend_warga.value || 0);
         }
@@ -1311,14 +1021,11 @@ function formatUkuran(byte) {
           document.getElementById('trend-sampah-rt-text').innerText = (data.trend_sampah_rt.direction === 'up' ? '+' : '') + data.trend_sampah_rt.percentage + '%';
         }
 
-        // Update charts
         initChartTrenRT(data.bulanan);
         initChartKomposisiRT(data.komposisi);
 
-        // Update top 3
         renderTop3Warga(data.top3);
 
-        // Update transaksi table + kartu HP
         const tbody = document.getElementById('tbl-dash-rt-body');
         const dashCards = document.getElementById('cards-dash-rt');
         const transaksi = (data.transaksi_terbaru && data.transaksi_terbaru.length > 0) ? data.transaksi_terbaru : [];
@@ -1327,7 +1034,6 @@ function formatUkuran(byte) {
           tbody.innerHTML = transaksi.length > 0
             ? transaksi.map(t =>
                 '<tr class="hover:bg-slate-50 dark:hover:bg-brand-950/60 transition-colors">' +
-                  // Semua kolom rata tengah supaya sejajar dengan judulnya.
                   '<td class="py-3 text-center text-slate-400 dark:text-emerald-300">' + t.tanggal + '</td>' +
                   '<td class="py-3 text-center font-extrabold text-slate-900 dark:text-white">' + t.nama + '</td>' +
                   '<td class="py-3 text-center text-slate-500 dark:text-emerald-300/80">' + t.rincian + '</td>' +
@@ -1338,10 +1044,6 @@ function formatUkuran(byte) {
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada transaksi warga</td></tr>';
         }
 
-        // Versi kartu untuk layar HP, disusun sama persis dengan kartu di
-        // halaman Riwayat: tanggal dan poin di baris pertama, lalu detail,
-        // lalu badge status. "Nama Warga" menempati posisi judul, "Rincian"
-        // menempati posisi baris detail.
         if (dashCards) {
           dashCards.innerHTML = transaksi.length > 0
             ? transaksi.map(t => {
@@ -1397,9 +1099,6 @@ function formatUkuran(byte) {
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada aktivitas warga</td></tr>';
         }
 
-        // Versi kartu untuk layar HP. Sengaja dibangun dari data yang sama
-        // dengan tabel di atas supaya isi, badge status, dan poinnya tidak
-        // mungkin berbeda di antara dua tampilan.
         if (cards) {
           cards.innerHTML = rows.length > 0
             ? rows.map(r => {
@@ -1477,15 +1176,10 @@ function formatUkuran(byte) {
       };
       if (passBaru !== "") payload.password = passBaru;
 
-      // Tunggu kompresi foto selesai dulu. Tanpa ini, menekan tombol simpan
-      // saat kompresi masih berjalan akan mengirim data URL mentah yang
-      // ukurannya jauh lebih besar dari batas server.
       if (uploadedFotoProses) {
         try {
           await uploadedFotoProses;
         } catch (err) {
-          // previewUploadedFoto sudah memakai berkas mentah sebagai cadangan,
-          // jadi di sini cukup lanjut saja.
         }
       }
       if (uploadedFotoDataUrl) payload.foto = uploadedFotoDataUrl;
@@ -1568,7 +1262,6 @@ function formatUkuran(byte) {
       document.getElementById('modal-notif').classList.add('hidden');
     }
 
-    // Chart initialization functions
     function initChartBulanan(chartData) {
       const ctx = document.getElementById('chartBulananWarga');
       if (!ctx) return;
@@ -1595,14 +1288,8 @@ function formatUkuran(byte) {
           animation: { duration: 1000, easing: 'easeInOutQuart' },
           plugins: {
             legend: { display: false },
-            // Tooltip bawaan Chart.js menulis "label: nilai", jadi hasilnya
-            // "Kontribusi Pilah (Kg): 12". Satuan Kg dipindah ke akhir kalimat
-            // supaya terbaca sebagai bagian dari nilainya, bukan dari judul.
             tooltip: {
               callbacks: {
-                // Judul bawaan Chart.js berisi nama bulan ("Sep"). Bulan itu
-                // sudah terlihat dari bar yang sedang disorot dan dari sumbu X,
-                // jadi tidak perlu ditulis ulang di dalam tooltip.
                 title: () => '',
                 label: (ctx) => 'Kontribusi Pilah : ' + ANGKA_DESIMAL.format(ctx.parsed.y) + ' Kg'
               }
@@ -1639,15 +1326,8 @@ function formatUkuran(byte) {
           animation: { duration: 1000, easing: 'easeInOutQuart' },
           plugins: {
             legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' }, color: textColor } },
-            // Porsi lebih masuk akal ditampilkan sebagai persen. Kalau
-            // ditampilkan dalam Kg, warga sulit membandingkan kategorinya
-            // karena satuan yang sama dipakai di semua irisan.
             tooltip: {
               callbacks: {
-                // Chart.js secara bawaan mencetak nama kategori sebagai judul
-                // tooltip (baris tebal). Karena baris `label` di bawah sudah
-                // memuat nama itu juga, kategori jadi tertulis dua kali.
-                // Judul dikosongkan supaya hanya satu baris yang tampil.
                 title: () => '',
                 label: (ctx) => {
                   const total = ctx.dataset.data.reduce((jumlah, nilai) => jumlah + nilai, 0);
@@ -1688,8 +1368,6 @@ function formatUkuran(byte) {
           animation: { duration: 1000, easing: 'easeInOutQuart' },
           plugins: {
             legend: { display: false },
-            // Sama seperti bar chart warga: nama bulan tidak ditulis di
-            // tooltip, satuan Kg pindah ke akhir kalimat.
             tooltip: {
               callbacks: {
                 title: () => '',
@@ -1728,8 +1406,6 @@ function formatUkuran(byte) {
           animation: { duration: 1000, easing: 'easeInOutQuart' },
           plugins: {
             legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' }, color: textColor } },
-            // Sama seperti pie warga: judul dikosongkan supaya nama kategori
-            // tidak tertulis dua kali, dan nilainya ditulis sebagai persen.
             tooltip: {
               callbacks: {
                 title: () => '',
@@ -1805,7 +1481,6 @@ function formatUkuran(byte) {
           showModernModal('success', 'Warga Ditambah', 'Akun ' + payload.nama + ' berhasil didaftarkan');
         }
 
-        // Reload warga data
         const res = await apiFetch('/warga');
         if (res.data) listWarga = res.data;
         
@@ -1813,8 +1488,6 @@ function formatUkuran(byte) {
         renderTop3Warga(listWarga);
         closeModalWarga();
       } catch (err) {
-        // Pakai pesan dari server (mis. "username sudah digunakan" atau
-        // "kolom password wajib diisi") supaya penyebab gagalnya jelas.
         showModernModal('danger', 'Gagal', err.message || 'Gagal menyimpan data warga.');
       }
     }
@@ -1831,7 +1504,6 @@ function formatUkuran(byte) {
           renderDaftarWarga();
           renderTop3Warga(listWarga);
 
-          // Laporkan berapa transaksi yang ikut terhapus.
           const t = (res.data && res.data.transaksi_dihapus) || {};
           const total = (t.setoran || 0) + (t.penukaran || 0) + (t.riwayat || 0);
           const info = total > 0
@@ -1845,13 +1517,7 @@ function formatUkuran(byte) {
       });
     }
 
-    // Tombol Edit/Hapus dipakai dua kali: di kolom Aksi tabel dan di baris
-    // bawah kartu HP. Dipisah supaya perubahannya tidak harus diulang di
-    // dua tempat dan tidak sampai berbeda.
     function wargaAksiButtons(w) {
-        // Ukuran 36x36 px (p-2.5 + ikon w-4). Sebelumnya 28x28 px, terlalu
-        // kecil untuk jari di layar sentuh: panduan aksesibilitas menyarankan
-        // area sentuh minimal 44x44 px, dan 28 px gampang diketuk keliru.
         return '<button onclick="openModalEditWarga(' + w.id + ')" title="Edit" aria-label="Edit data warga" class="p-2.5 bg-slate-100 dark:bg-brand-950 hover:bg-slate-200 dark:hover:bg-brand-900 text-slate-700 dark:text-emerald-200 rounded-xl active-press inline-flex items-center justify-center"><i data-lucide="pencil" class="w-4 h-4"></i></button>' +
             '<button onclick="hapusWarga(' + w.id + ')" title="Hapus" aria-label="Hapus warga" class="p-2.5 bg-rose-100 dark:bg-rose-950 hover:bg-rose-200 dark:hover:bg-brand-900 text-rose-600 dark:text-rose-400 rounded-xl active-press inline-flex items-center justify-center"><i data-lucide="trash-2" class="w-4 h-4"></i></button>';
     }
@@ -1868,7 +1534,6 @@ function formatUkuran(byte) {
             return fullText.includes(q);
         });
 
-        // Urutkan berdasarkan nomor rumah
         filtered.sort((a, b) => {
             const rumahA = (a.rumah || '').toString().toLowerCase();
             const rumahB = (b.rumah || '').toString().toLowerCase();
@@ -1889,36 +1554,23 @@ function formatUkuran(byte) {
                     '<td class="py-3 text-center font-extrabold text-slate-900 dark:text-white">' + w.nama + '</td>' +
                     '<td class="py-3 text-center text-slate-500 dark:text-emerald-300 font-semibold">' + (w.rumah || '-') + '</td>' +
                     '<td class="py-3 text-center text-emerald-600 dark:text-emerald-400 font-bold">' + (w.wa || '-') + '</td>' +
-                    // Tanpa "@" supaya sama persis dengan yang diketik di form Akses Akun.
                     '<td class="py-3 text-center font-sans text-brand-600 dark:text-brand-300 font-extrabold">' + (w.username || '-') + '</td>' +
                     '<td class="py-3 text-center font-extrabold text-brand-600 dark:text-brand-300">' + w.poin + ' pts</td>' +
                     '<td class="py-3 text-center">' +
-                        // Dibungkus inline-flex agar dua tombol tetap rapat berdampingan
-                        // di tengah kolom, bukan berdesakan ke kanan.
                         '<div class="inline-flex items-center gap-1">' + wargaAksiButtons(w) + '</div>' +
                     '</td>' +
                 '</tr>'
             ).join('');
         }
 
-        // Kartu untuk HP, tiga baris. Ketiganya terisi penuh supaya tidak ada
-        // ruang kosong: baris 1 nama + poin, baris 2 nomor WA saja, baris 3
-        // tombol Edit/Hapus + nomor rumah di kanan.
-        //
-        // Username SENGAJA tidak ditampilkan di kartu. Di HP ruangnya sempit
-        // dan username bukan data yang perlu dipindai petugas; kolomnya
-        // masih ada di tabel untuk layar lebar.
         if (cards) {
             cards.innerHTML = filtered.map(w =>
                 '<div class="warga-card rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-3.5 space-y-2">' +
-                    // Baris 1: nama di kiri, total poin di paling kanan.
                     '<div class="flex items-center justify-between gap-2">' +
                         '<p class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight min-w-0 break-words">' + w.nama + '</p>' +
                         '<span class="shrink-0 font-extrabold text-xs text-brand-600 dark:text-brand-300">' + w.poin + ' pts</span>' +
                     '</div>' +
-                    // Baris 2: nomor WA apa adanya, tanpa label.
                     '<p class="text-xs text-slate-500 dark:text-emerald-300/80 leading-relaxed break-words">' + (w.wa || '-') + '</p>' +
-                    // Baris 3: tombol di kiri, nomor rumah di paling kanan.
                     '<div class="flex items-center justify-between gap-2">' +
                         '<div class="flex items-center gap-2">' + wargaAksiButtons(w) + '</div>' +
                         '<span class="shrink-0 text-[10px] font-bold text-slate-500 dark:text-emerald-300 bg-slate-100 dark:bg-brand-900/60 rounded-md px-1.5 py-0.5">' + (w.rumah || '-') + '</span>' +
@@ -1965,15 +1617,6 @@ function formatUkuran(byte) {
       }
 
       container.innerHTML = filtered.map(item => {
-        // Tombol pada tiap kartu sudah membawa keterangannya sendiri, jadi warga
-        // tidak perlu menekan dulu untuk tahu apakah poinnya cukup atau tidak.
-        // Dua alasan tidak bisa ditukar, keduanya ditulis apa adanya:
-        //   - stok habis
-        //   - poin warga masih kurang dari harga hadiah
-        //
-        // Notifikasi pop-up "Poin Kurang" sengaja dihilangkan. Kalau tombolnya
-        // sudah tulis "Poin Kurang" dan tidak bisa diklik, pop-up hanya memaksa
-        // warga menekan tombol yang memang tidak ada gunanya.
         const tidakBisaDitukar = 'px-3.5 py-1.5 bg-slate-200 dark:bg-emerald-950 text-slate-400 dark:text-emerald-600 border border-transparent dark:border-emerald-900 rounded-lg text-xs font-bold cursor-not-allowed';
 
         let aksi;
@@ -2018,15 +1661,9 @@ function formatUkuran(byte) {
     }
 
     function editReward(id) {
-      // id bisa datang sebagai number (dari onclick) atau string (dari form),
-      // jadi samakan tipe dulu sebelum dibandingkan.
       const item = katalogRewards.find(r => String(r.id) === String(id));
 
       if (!item) {
-        // Daftar masih kosong sama sekali (user baru buka menu saat
-        // loadRewards() masih berjalan). Tunggu dulu -- JANGAN buka form
-        // kosong, karena id kosong nanti disalahartikan sebagai "tambah
-        // baru" sehingga item yang diedit tidak ikut berubah.
         if (!katalogRewards.length && !rewardsLoaded) {
           loadRewards().then(() => {
             if (rewardsLoaded) editReward(id);
@@ -2034,7 +1671,6 @@ function formatUkuran(byte) {
           return;
         }
 
-        // Daftar di layar sudah basi, muat ulang dari database.
         loadRewards().then(() => {
           renderRewardPengurusList();
           showModernModal('danger', 'Tidak Ditemukan', 'Item hadiah tersebut sudah tidak ada. Daftar telah dimuat ulang.');
@@ -2042,9 +1678,6 @@ function formatUkuran(byte) {
         return;
       }
 
-      // Isi form langsung dari data yang sudah ada. Sengaja TIDAK menunggu
-      // loadRewards() yang sedang berjalan: menunggu membuat form tetap
-      // kosong sehingga simpanan user terbaca sebagai data baru.
       document.getElementById('reward-id').value = item.id;
       document.getElementById('reward-nama').value = item.nama;
       document.getElementById('reward-poin').value = item.poin;
@@ -2072,8 +1705,6 @@ function formatUkuran(byte) {
       const item = katalogRewards.find(r => String(r.id) === String(id));
 
       if (!item) {
-        // Daftar masih kosong sama sekali -> tunggu datanya dulu, jangan
-        // tampilkan dialog konfirmasi untuk data yang belum kita kenal.
         if (!katalogRewards.length && !rewardsLoaded) {
           loadRewards().then(() => {
             if (rewardsLoaded) hapusReward(id);
@@ -2094,24 +1725,17 @@ function formatUkuran(byte) {
         try {
           const res = await apiFetch('/rewards/' + item.id, { method: 'DELETE' });
 
-          // Hilangkan dari daftar yang SEDANG TAMPIL sebelum ambil ulang dari
-          // database, supaya item yang baru saja dihapus langsung hilang
-          // walaupun GET /rewards berikutnya gagal atau lambat.
           katalogRewards = katalogRewards.filter(r => String(r.id) !== String(item.id));
           renderRewardPengurusList();
           renderKatalogWarga();
           updatePoinDisplay();
 
-          // Muat ulang dari database lewat loadRewards() agar respons basi
-          // dari permintaan lama tidak bisa mengembalikan item ini ke layar.
           await loadRewards();
 
           renderRewardPengurusList();
           renderKatalogWarga();
           updatePoinDisplay();
 
-          // Kupon barang ini sudah dibatalkan dan poinya dikembalikan oleh
-          // server; laporkan angkanya lewat modal supaya petugas tahu.
           const kuponHapus = (res.data && res.data.kupon_terhapus) || 0;
           const poinKembali = (res.data && res.data.poin_dikembalikan) || 0;
           const info = kuponHapus > 0
@@ -2135,7 +1759,6 @@ function formatUkuran(byte) {
       const poin = parseInt(document.getElementById('reward-poin').value);
       const stok = parseInt(document.getElementById('reward-stok').value);
 
-      // Validasi di sisi klien supaya tidak mengirim request yang pasti gagal.
       if (isNaN(poin) || poin < 0) {
         showModernModal('danger', 'Gagal', 'Poin hadiah harus berupa angka dan tidak boleh negatif.');
         return;
@@ -2156,9 +1779,6 @@ function formatUkuran(byte) {
       try {
         const sedangEdit = id !== '' && id !== null && id !== undefined;
 
-        // Form masih dalam mode Edit tapi id kosong -- artinya form ter-reset
-        // di tengah jalan. Kalau dibiarkan, request ini jadi TAMBAH baru dan
-        // item yang diedit tidak berubah sama sekali.
         if (!sedangEdit && document.getElementById('reward-form-title').innerText === 'Edit Item Hadiah') {
           showModernModal('danger', 'Gagal', 'Sesi edit terputus sehingga id item hilang. Silakan klik tombol Edit sekali lagi.');
           return;
@@ -2167,8 +1787,6 @@ function formatUkuran(byte) {
         let hasilSimpan = null;
 
         if (sedangEdit) {
-          // Pastikan id benar-benar masih ada di katalog yang dimuat
-          // terbaru, supaya tidak mengirim request ke data yang sudah hilang.
           const masihAda = katalogRewards.some(r => String(r.id) === String(id));
           if (!masihAda) {
             await loadRewards();
@@ -2183,11 +1801,6 @@ function formatUkuran(byte) {
           hasilSimpan = await apiFetch('/rewards', { method: 'POST', body: JSON.stringify(payload) });
         }
 
-        // Terapkan hasil server ke daftar yang SEDANG TAMPIL lebih dulu, baru
-        // ambil ulang dari database. Dengan begitu data yang tampil ikut
-        // berubah seketika setelah simpanan berhasil -- bahkan kalau GET
-        // /rewards berikutnya gagal atau lambat, user tidak lagi melihat
-        // data lama padahal pesan "Berhasil" sudah muncul.
         if (hasilSimpan && hasilSimpan.data) {
           const baru = hasilSimpan.data;
           const itemBaru = {
@@ -2207,9 +1820,6 @@ function formatUkuran(byte) {
           updatePoinDisplay();
         }
 
-        // Muat ulang data hadiah dari database sebagai penyesuaian akhir.
-        // Lewat loadRewards() supaya respons basi dari permintaan yang lebih
-        // lama tidak dapat menimpa perubahan yang baru saja disimpan.
         await loadRewards();
 
         resetFormReward();
@@ -2219,8 +1829,6 @@ function formatUkuran(byte) {
 
         showModernModal('success', 'Berhasil', sedangEdit ? 'Item hadiah diperbarui' : 'Hadiah baru ditambahkan');
       } catch (err) {
-        // 404 = data yang diedit sudah tidak ada. Segarkan daftar supaya
-        // user tidak melihat data basi lagi.
         if (err.status === 404) {
           await loadRewards();
           resetFormReward();
@@ -2234,13 +1842,6 @@ function formatUkuran(byte) {
       const item = katalogRewards.find(r => r.id === rewardId);
       if (!item) return;
 
-      // Katalog sudah menandai hadiah yang tidak terjangkau dengan tombol
-      // "Poin Kurang" / "Stok Habis" yang tidak bisa diklik, jadi warga tidak
-      // pernah sampai ke sini untuk hadiah yang memang belum bisa diambil.
-      // Dua pengecekan di bawah hanya jaring pengaman kalau data di layar
-      // basi -- misalnya poin berubah karena dipakai petugas dari akun lain.
-      // Keduanya diam-diam membatalkan aksi; pesan aslinya sudah tercetak
-      // di tombolnya, jadi tidak perlu diulang lewat pop-up lagi.
       if (item.stok <= 0 || userPoin < item.poin) return;
 
       showModernModal('confirm', 'Tukar Hadiah', 'Tukar ' + item.poin + ' poin dengan ' + item.nama + '?', async () => {
@@ -2251,7 +1852,6 @@ function formatUkuran(byte) {
             userPoin -= item.poin;
             item.stok -= 1;
             
-            // Reload data
             await loadInitialData();
             await loadKategoriSampah();
             
@@ -2275,16 +1875,12 @@ function formatUkuran(byte) {
       try {
         const res = await apiFetch('/verifikasi/kupon');
 
-        // Respons lama tidak boleh menimpa daftar yang lebih baru.
         if (seq !== kuponFetchSeq) return;
 
         if (res.data) listKuponVerifikasi = res.data;
       } catch (err) {
         console.warn('Gagal memuat kupon:', err);
       } finally {
-        // Render SETELAH data sampai. Tanpa ini halaman Verifikasi Kupon
-        // selalu menggambar daftar lama (hasil load saat login), sehingga
-        // kupon baru hasil penukaran warga tidak pernah muncul.
         if (seq === kuponFetchSeq) {
           const input = document.getElementById('global-search-input');
           renderKuponPengurus(input ? input.value : '');
@@ -2292,29 +1888,17 @@ function formatUkuran(byte) {
       }
     }
 
-    /**
-     * Muat ulang daftar warga dari database.
-     *
-     * Dipanggil setiap kali menu "Kelola Warga" dibuka. Tanpa ini, listWarga
-     * hanya berisi hasil pemuatan saat login, jadi warga yang baru ditambahkan
-     * atau datanya baru diubah (dari tab lain / perangkat lain) tidak terlihat
-     * sampai browser di-refresh.
-     */
     async function loadWarga() {
       const seq = ++wargaFetchSeq;
       try {
         const res = await apiFetch('/warga');
 
-        // Jangan timpa dengan respons basi.
         if (seq !== wargaFetchSeq) return;
 
         if (res.data) listWarga = res.data;
       } catch (err) {
         console.warn('Gagal memuat daftar warga:', err);
       } finally {
-        // Render setelah data sampai, bukan sebelum, supaya tidak sempat
-        // menggambar daftar lama. Isi pencarian yang sedang diketik ikut
-        // dipertahankan supaya ketikan pengguna tidak hilang.
         if (seq === wargaFetchSeq) {
           const input = document.getElementById('global-search-input');
           renderDaftarWarga(input ? input.value : '');
@@ -2322,13 +1906,6 @@ function formatUkuran(byte) {
       }
     }
 
-    /**
-     * Muat ulang antrean verifikasi setoran.
-     *
-     * Sama seperti loadWarga: tanpa pemuatan ulang, setoran baru dari warga
-     * tidak akan muncul di menu "Verifikasi" sampai browser di-refresh, dan
-     * angka antrean di sidebar ikut basi.
-     */
     async function loadVerifikasiSetoran() {
       const seq = ++verifikasiFetchSeq;
       try {
@@ -2347,17 +1924,12 @@ function formatUkuran(byte) {
       }
     }
 
-    // Badge status dan tombol aksi dipakai dua kali: di kolom tabel dan di
-    // kartu HP. Dipisah supaya keduanya tidak sampai berbeda.
     function kuponStatusBadge(diambil) {
         return diambil
             ? '<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-extrabold text-[10px] rounded-full border border-transparent dark:border-emerald-800">Sudah Diambil</span>'
             : '<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-extrabold text-[10px] rounded-full border border-transparent dark:border-amber-800/60">Belum Diambil</span>';
     }
 
-    // Tombol aksi kupon. Tanpa argumen `kartu` hasilnya untuk tabel desktop
-    // (kecil, lebar natural). Dengan `kartu = true` ukurannya dinaikkan dan
-    // melebar supaya enak ditek di layar HP.
     function kuponAksiButton(k, kartu) {
         const aksi = 'toggleStatusKupon(\'' + k.id + '\', ' + (k.diambil ? 'false' : 'true') + ')';
         const label = k.diambil ? 'Batalkan' : 'Konfirmasi Ambil';
@@ -2402,7 +1974,6 @@ function formatUkuran(byte) {
         if (tbody) {
             tbody.innerHTML = filtered.map(k =>
                 '<tr class="hover:bg-slate-50 dark:hover:bg-brand-950/60 transition-colors">' +
-                    // Semua kolom dibuat center supaya isi tabel terlihat rapi.
                     '<td class="py-3.5 text-center font-sans font-bold text-slate-900 dark:text-white text-xs">' + k.kode_kupon + '</td>' +
                     '<td class="py-3.5 text-center font-extrabold text-slate-900 dark:text-white">' + k.nama + ' <span class="text-slate-400 dark:text-emerald-400 font-normal">(' + (k.rumah || '-') + ')</span></td>' +
                     '<td class="py-3.5 text-center font-bold text-slate-700 dark:text-emerald-200">' + k.barang + '</td>' +
@@ -2413,12 +1984,6 @@ function formatUkuran(byte) {
             ).join('');
         }
 
-        // Kartu untuk HP. Susunannya dari atas: tanggal penukaran di kiri dan
-        // status di kanan, nama warga sebagai judul, jenis hadiah sebagai
-        // detail, lalu tombol aksi melebar dengan kode kupon di sisinya.
-        // Nomor rumah sengaja tidak ditampilkan di sini supaya judul kartu
-        // tetap ringkas saat petugas menyisir antrean -- nomornya masih ada
-        // di kolom "Nama Warga" pada tabel desktop.
         if (cards) {
             cards.innerHTML = filtered.map(k =>
                 '<div class="kupon-card rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-4 space-y-2.5">' +
@@ -2440,9 +2005,6 @@ function formatUkuran(byte) {
 
     async function toggleStatusKupon(idKupon, statusAmbil) {
       try {
-        // Yang diteruskan ke fungsi ini adalah Penukaran.id (mis. 170), bukan
-        // kode kupon. Kode kupon harus dicari dari daftar, dan itu harus
-        // dilakukan SEBELUM daftar di-reload di bawah.
         const kupon = listKuponVerifikasi.find(k => String(k.id) === String(idKupon));
         const kode = kupon ? kupon.kode_kupon : idKupon;
 
@@ -2451,7 +2013,6 @@ function formatUkuran(byte) {
           body: JSON.stringify({ diambil: statusAmbil })
         });
         
-        // Reload kupon data
         const res = await apiFetch('/verifikasi/kupon');
         if (res.data) listKuponVerifikasi = res.data;
         
@@ -2487,16 +2048,10 @@ function formatUkuran(byte) {
 
       container.innerHTML = filtered.map(item => 
         '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40">' +
-          // min-w-0 wajib: tanpa itu, teks panjang (mis. nama kategori yang
-          // panjang) menahan kolom ini melebar dan mendorong tombol ke luar kotak.
           '<div class="min-w-0">' +
             '<p class="font-extrabold text-slate-900 dark:text-white text-sm leading-tight break-words">' + item.nama + ' (' + (item.rumah || '-') + ')</p>' +
             '<p class="text-xs text-slate-500 dark:text-emerald-300/80 font-medium mt-0.5 break-words">' + item.jenis + ' - ' + item.berat + '</p>' +
           '</div>' +
-          // flex-wrap: tiga tombol ini totalnya +-266px, sedangkan ruang di
-          // layar 360px hanya +-244px. Sebelumnya `shrink-0` memaksa mereka
-          // tetap satu baris sehingga keluar dari kotak. Dengan wrap, kalau
-          // tidak cukup ruang tombol turun ke baris berikutnya.
           '<div class="flex flex-wrap gap-2 sm:shrink-0">' +
             '<button onclick="bukaModalDetailSetoran(' + item.id + ')" class="px-3 py-2 bg-slate-200 dark:bg-brand-950 text-slate-800 dark:text-emerald-200 hover:bg-slate-300 border border-transparent dark:border-emerald-800 rounded-xl font-bold text-xs active-press shadow-sm flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-brand-600 dark:text-brand-400"></i> Detail</button>' +
             '<button onclick="prosesVerifikasi(' + item.id + ', true)" class="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs active-press shadow-sm flex items-center gap-1.5"><i data-lucide="check" class="w-4 h-4"></i> Terima</button>' +
@@ -2557,7 +2112,6 @@ function formatUkuran(byte) {
         verifikasiPending = verifikasiPending.filter(item => item.id !== id);
         renderVerifikasi();
         
-        // Update badge
         const badgeEl = document.getElementById('badge-pending-count');
         if (badgeEl) badgeEl.innerText = verifikasiPending.length;
         const antreanEl = document.getElementById('antrean-verifikasi-count');
@@ -2574,7 +2128,6 @@ function formatUkuran(byte) {
         const res = await apiFetch('/laporan/bulan');
         const select = document.getElementById('laporan-bulan');
         if (select && res.data) {
-          // Keep "Semua Periode" option, remove others
           select.innerHTML = '<option value="">Pilih Bulan</option><option value="all">Semua Periode</option>';
           res.data.forEach(b => {
             const opt = document.createElement('option');
@@ -2597,7 +2150,6 @@ function formatUkuran(byte) {
         return;
       }
 
-      // Redirect to export URL (format selalu PDF)
       const url = '/laporan/cetak?bulan=' + encodeURIComponent(bulan) + '&format=pdf';
       window.open(url, '_blank');
     }
@@ -2622,10 +2174,8 @@ function formatUkuran(byte) {
         formData.append('berat', berat);
         formData.append('satuan', satuan);
         formData.append('catatan', catatan);
-        // Tunggu kompresi foto selesai lebih dulu, kalau tidak berkas mentah
-        // ikut terkirim dan pasti ditolak validasi server.
         if (setorFotoProses) {
-          try { await setorFotoProses; } catch (err) { /* pakai berkas mentah */ }
+          try { await setorFotoProses; } catch (err) { }
         }
         if (fotoInput && fotoInput.files.length > 0) {
           formData.append('foto', setorFotoSiap || fotoInput.files[0]);
@@ -2638,7 +2188,6 @@ function formatUkuran(byte) {
         
         if (res.success) {
           showModernModal('success', 'Terkirim', 'Laporan setoran berhasil dikirim', () => {
-            // Reset form
             document.getElementById('setor-kategori').value = '';
             document.getElementById('setor-berat').value = '';
             document.getElementById('setor-catatan').value = '';
@@ -2650,9 +2199,6 @@ function formatUkuran(byte) {
           showModernModal('danger', 'Gagal', res.message || 'Gagal mengirim laporan setoran.');
         }
       } catch (err) {
-        // Tampilkan pesan asli dari server, mis. "Berat maksimal 1.000 Kg per
-        // setoran" atau "Satuan tidak dikenali". Jangan selalu menyebut
-        // "kesalahan jaringan" karena itu menutupi kesalahan input.
         showModernModal('danger', 'Gagal', (err && err.message) || 'Gagal mengirim laporan setoran');
       }
     }
@@ -2663,7 +2209,6 @@ function formatUkuran(byte) {
 
       const label = document.getElementById('setor-foto-filename');
 
-      // Preview berkas mentah supaya responsif, kompresi jalan di belakang.
       const reader = new FileReader();
       reader.onload = function(e) {
         document.getElementById('setor-foto-placeholder').classList.add('hidden');
@@ -2674,9 +2219,6 @@ function formatUkuran(byte) {
 
       if (label) label.innerText = 'Memproses foto...';
 
-      // setorFotoProses disimpan supaya handleSubmitSetoran bisa menunggu
-      // kompresi selesai. Tanpa itu, menekan tombol kirim sebelum kompresi
-      // beres akan mengirim berkas mentah yang pasti ditolak server.
       setorFotoProses = kompresGambar(file)
         .then((hasil) => {
           setorFotoSiap = hasil;
@@ -2686,8 +2228,6 @@ function formatUkuran(byte) {
           }
         })
         .catch(() => {
-          // Kompresi gagal (mis. HEIC dari iPhone): pakai berkas mentah,
-          // validasi server yang menolak kalau kelewat besar.
           setorFotoSiap = null;
           if (label) {
             label.innerText = file.name + ' - ' + formatUkuran(file.size) + ' (tidak dikompres)';
@@ -2711,17 +2251,6 @@ function formatUkuran(byte) {
       document.documentElement.classList.toggle('dark');
     }
 
-    /* ============ DRAWER SIDEBAR (KHUSUS LAYAR KECIL) ============
-       Di bawah breakpoint `lg` sidebar jadi drawer: sliding dari kiri dan
-       menutupi sebagian layar. Di layar lebar sidebar kembali seperti
-       semula di samping konten, dan tombol titik tiga disembunyikan oleh CSS.
-
-       Ambang lebar layar dibaca dari aturan CSS `lg:` (1024px), sama dengan
-       yang dipakai kelas `lg:` di markup, supaya tidak ikut berubah kalau
-       breakpoint Tailwind diganti.
-    */
-
-    /** Lebar layar saat ini sudah besar (>= lg) atau belum. */
     function layarLebar() {
       return window.matchMedia('(min-width: 1024px)').matches;
     }
@@ -2750,18 +2279,9 @@ function formatUkuran(byte) {
         tombol.setAttribute('aria-label', terbuka ? 'Tutup menu' : 'Buka menu');
       }
 
-      // Latar halaman di belakang drawer tidak boleh ikut bergulir, kalau tidak
-      // menggulir halaman terjadi bersamaan dengan menggeser drawer.
-      //
-      // Ditulis sebagai nilai mutlak (bukan toggle) supaya selalu konsisten:
-      // begitu layar jadi lebar, `overflow` langsung dikosongkan tanpa
-      // bergantung pada kelas yang kebetulan terpasang. Kalau atribut ini
-      // tertinggal 'hidden', halaman terkunci dan tidak bisa digulir sama sekali.
       document.body.style.overflow = (!layarLebar() && terbuka) ? 'hidden' : '';
 
       if (layarLebar()) {
-        // Di layar lebar sidebar kolom biasa, jadi tidak boleh menyisakan
-        // status "dibuka" yang membuat overlay tetap tampil.
         sidebar.classList.remove('-translate-x-full');
         sidebar.classList.add('lg:translate-x-0');
       }
@@ -2781,18 +2301,10 @@ function formatUkuran(byte) {
       terapkanStatusSidebar(false);
     }
 
-    // Kalau jendela diperbesar melewati `lg` sementara drawer sedang terbuka,
-    // sidebar sudah tampil sebagai kolom biasa, jadi tombolnya harus disembunyikan
-    // dan gulir latar harus dibebaskan kembali.
     window.matchMedia('(min-width: 1024px)').addEventListener('change', function (e) {
       if (e.matches) tutupSidebar();
     });
 
-    // Jaring pengaman untuk perubahan ukuran yang TIDAK melewati 1024px --
-    // memutar HP, jendela browser di-drag, atau zoom browser. Yang dipengaruhi
-    // zoom adalah lebar viewport CSS, bukan lebar jendela, jadi `resize`
-    // dipantau untuk memastikan status drawer dan kunci gulir halaman selalu
-    // sesuai ukuran layar saat ini.
     let timerResize = null;
     window.addEventListener('resize', function () {
       clearTimeout(timerResize);
@@ -2801,7 +2313,6 @@ function formatUkuran(byte) {
       }, 150);
     });
 
-    // Escape menutup drawer, mengikuti kebiasaan menu di Android/iOS.
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       const sidebar = document.getElementById('sidebar');
@@ -2810,22 +2321,14 @@ function formatUkuran(byte) {
       }
     });
 
-    // Set current date. Penjaga null wajib: baris ini berada di luar try/catch
-    // dan dieksekusi SEBELUM checkSession(). Kalau id-nya Typo atau topbar
-    // dihapus, getElementById mengembalikan null dan seluruh kode setelah baris
-    // ini ikut batal -- termasuk checkSession() di bawah.
     const elTanggal = document.getElementById('current-date-text');
     if (elTanggal) {
       elTanggal.innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // Pastikan drawer selalu tertutup saat halaman selesai dimuat, walau
-    // browser memulihkan posisi gulir atau status DOM dari cache.
     tutupSidebar();
 
-    // Check for existing session on page load
     (async function checkSession() {
-      // Tanpa token tidak ada yang perlu ditanyakan ke server.
       if (!authToken) { tampilkanLogin(); return; }
 
       try {
@@ -2835,14 +2338,11 @@ function formatUkuran(byte) {
           userPoin = res.user.poin || 0;
           await setupUserSystem();
         } else {
-          // Server menolak token tanpa error -> perlakukan sebagai belum login.
           localStorage.removeItem('plung_token');
           authToken = null;
           tampilkanLogin();
         }
       } catch (err) {
-        // Gagal jaringan / server. Token TIDAK dihapus di sini, supaya token
-        // yang masih sah tidak hilang hanya karena koneksi sesaat putus.
         console.warn('Gagal memeriksa sesi:', err);
         tampilkanLogin();
       }

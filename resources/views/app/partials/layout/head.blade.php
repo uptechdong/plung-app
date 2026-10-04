@@ -25,17 +25,15 @@
   ==================================================================== --}}
   <script>
     (function () {
-      var HOST_KANONIK = 'localhost';   // ganti ke '127.0.0.1' bila ingin dibalik
+      var HOST_KANONIK = 'localhost';
       var host = location.hostname;
 
-      if (host === HOST_KANONIK) return;                       // sudah benar
-      // Host lain (domain/IP sungguhan) tidak boleh disentuh.
+      if (host === HOST_KANONIK) return;
       if (host !== '127.0.0.1' && host !== '0.0.0.0' && host !== '::1' && host !== '[::1]') return;
 
       var port = location.port ? (':' + location.port) : '';
       var tujuan = location.protocol + '//' + HOST_KANONIK + port + location.pathname + location.search + location.hash;
 
-      // Ditandai agar bisa diperiksa otomatis dari pengujian.
       window.__alamatKanonik = { dari: host + port, ke: HOST_KANONIK + port };
 
       location.replace(tujuan);
