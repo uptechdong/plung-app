@@ -124,4 +124,16 @@ EXPOSE 8080
 # PHP_CLI_SERVER_WORKERS, hanya menjalankan satu server, dan variabel
 # lingkungan tidak terbaca sehingga aplikasi gagal dengan
 # MissingAppKeyException.
-CMD ["sh", "-c", "php artisan storage:link --force || true; php artisan migrate:fresh --seed --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
+# migrate --force aman diulang; TIDAK memakai migrate:fresh karena itu
+# akan menghapus semua data setiap kali container start.
+# db:seed sengaja tidak ada di sini: DatabaseSeeder memakai ::create()
+# sehingga tidak idempoten, dan datanya sudah dibuat.
+#
+# storage:link -> symlink public/storage -> storage/app/public
+# serve       -> menjalankan aplikasi di 0.0.0.0:$PORT
+#
+# --no-reload WAJIB ada. Tanpa flag itu PHP mengabaikan
+# PHP_CLI_SERVER_WORKERS, hanya menjalankan satu server, dan variabel
+# lingkungan tidak terbaca sehingga aplikasi gagal dengan
+# MissingAppKeyException.
+CMD ["sh", "-c", "php artisan storage:link --force || true; php artisan migrate --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
