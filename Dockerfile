@@ -144,7 +144,7 @@ EXPOSE 8080
 #
 # migrate --force aman diulang; TIDAK memakai migrate:fresh karena itu
 # akan menghapus semua data setiap kali container start.
-# db:seed sengaja tidak ada di sini: DatabaseSeeder memakai ::create()
+# db:seed sengaja tidak ada di sini. Proyek ini tidak menyertakan seeder,
 # sehingga tidak idempoten, dan datanya sudah dibuat.
 # Folder runtime selalu dipastikan ada. Volume Railway di /app/storage
 # bisa ikut terisi ulang dari image, jadi jangan andalkan isi volume.

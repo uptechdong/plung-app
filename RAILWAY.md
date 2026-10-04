@@ -132,61 +132,49 @@ Kalau gagal, cek baris merah di log. Pesan yang paling sering muncul:
 
 ---
 
-## 7. Isi data awal (WAJIB)
+## 7. Isi data awal
 
-Migration hanya membuat tabel, isinya masih kosong. Data awal
-(warga, kategori sampah, katalog hadiah, contoh setoran) diisi oleh
-`DatabaseSeeder`.
+Migration hanya membuat tabel, isinya masih kosong. Proyek ini sengaja
+tidak menyertakan seeder, jadi data awal diisi manual.
 
-**Jangan pakai `railway shell`.** Perintah itu berjalan di komputer
-Anda dengan variabel Railway, bukan di dalam container, sehingga
-`mysql.railway.internal` tidak bisa dijangkau:
+Data yang perlu ada agar aplikasi bisa dipakai:
+
+| Tabel | Isi minimal |
+|-------|-------------|
+| `kategori_sampah` | 4 kategori beserta poin per unit dan satuannya |
+| `rewards` | Katalog hadiah beserta harga poin dan stok |
+| `users` | 1 akun pengurus + beberapa akun warga |
+
+Gunakan **Shell di dashboard Railway** (project -> service aplikasi ->
+tombol **Shell**) untuk mengisinya.
+
+**Jangan pakai `railway shell` dari CLI.** Perintah itu berjalan di
+komputer Anda dengan variabel Railway, bukan di dalam container, sehingga
+domain internal tidak bisa dijangkau:
 
 ```
 PDOException: getaddrinfo for mysql.railway.internal failed
 ```
 
-Gunakan **Shell di dashboard Railway** (bukan CLI):
-project -> service aplikasi -> tombol **Shell**, lalu:
-
-```bash
-php artisan db:seed --force
-```
-
-Lakukan **sekali saja**. `DatabaseSeeder` memakai `::create()`, jadi
-mengulanginya akan error duplicate key.
-
-Alternatif tanpa shell: ubah CMD di `Dockerfile` menjadi
-`php artisan migrate:fresh --seed --force`, deploy, lalu **kembalikan
-seperti semula**. Jangan lupa dikembalikan, karena `migrate:fresh`
-menghapus semua data setiap container start.
-
 ### Nilai `status` yang valid
 
-Kalau `db:seed` gagal dengan
-`SQLSTATE[01000]: Warning: 1265 Data truncated for column 'status'`,
-berarti nilai status di seeder tidak cocok dengan enum di database.
-
-Enum final `setoran.status` adalah:
+Kolom `setoran.status` bertipe enum dengan nilai:
 
 ```
 diproses | diterima | ditolak
 ```
 
 `pending` dan `disetujui` **sudah dihapus** oleh migration
-`add_diproses_to_setoran_status_enum` dan
-`replace_disetujui_with_diterima`. Lifecycle-nya:
+`add_diproses_to_setoran_status_enum` dan `replace_disetujui_with_diterima`.
 
 | Status | Arti |
 |---|---|
-| `diproses` | menunggu verifikasi petugas (`SetoranController`) |
+| `diproses` | menunggu verifikasi petugas |
 | `diterima` | sudah diverifikasi, dihitung di dashboard |
 | `ditolak` | ditolak petugas |
 
-Karena Laravel mengubah warning MySQL menjadi exception, satu insert
-batal saja sudah menghentikan seluruh seeding.
-
-Setelah itu, buka aplikasi dan login pakai akun seed.
+Pastikan nilai yang di-insert sesuai daftar di atas. Kalau tidak, MySQL
+memotongnya menjadi string kosong dan merusak perhitungan poin.
 
 ---
 
@@ -246,3 +234,15 @@ bersamaan. Kalau masih kurang, naikkan angkanya.
 Batas di kode adalah 3 MB (`max:3072` di `AuthController` dan
 `SetoranController`). Batas bawaan server adalah 4 MB, jadi foto
 masih aman.
+
+
+
+
+
+
+
+
+
+
+
+
