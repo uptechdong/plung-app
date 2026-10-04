@@ -1,0 +1,50 @@
+# ============================================================
+#  Berkas yang TIDAK ikut copied ke image Docker
+# ============================================================
+
+# --- Dependensi (di-install ulang di dalam image) ---
+node_modules
+vendor
+
+# Hasil build frontend. Kalau ikut tersalin, build lama bisa menimpa
+# hasil build baru di tahap frontend.
+public/build
+public/hot
+public/storage
+
+# --- KUNCI RAHASIA ---
+# .env TIDAK BOLEH masuk image. Semua konfigurasi produksi
+# diberikan lewat variabel Railway.
+.env
+
+# --- VCS & editor ---
+.git
+.gitignore
+.gitattributes
+.github
+.idea
+.vscode
+
+# --- Test (tidak dipakai di runtime) ---
+tests
+
+# --- Runtime: log, cache, session, view hasil kompilasi ---
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+storage/app/private/*
+bootstrap/cache/*.php
+
+# --- miscellaneous ---
+*.log
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+*.db
+.phpunit.result.cache
+.phpunit.cache
+.DS_Store
+Thumbs.db

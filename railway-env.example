@@ -1,0 +1,109 @@
+# ============================================================
+#  VARIABEL RAILWAY - PLUNG!
+# ============================================================
+#  File ini HANYA acuan. JANGAN disalin jadi .env di Railway.
+#  Masukkan setiap variabel satu per satu lewat:
+#    Railway dashboard -> project Anda -> Variables -> New Variable
+#
+#  Nama file sengaja bukan ".env.railway.example" karena .gitignore
+#  memakai aturan ".env.*" yang akan mengabaikan file itu.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. WAJIB - identitas aplikasi
+# ------------------------------------------------------------
+APP_NAME=PLUNG!
+APP_ENV=production
+APP_DEBUG=false
+# APP_URL diisi SESUDAH domain Railway terbentuk (lihat RAILWAY.md).
+APP_URL=https://NAMA-PROYEK.up.railway.app
+
+# APP_KEY dibuat dengan: php artisan key:generate
+# Nilai hasil perintah itu tempel di sini.
+APP_KEY=
+
+APP_LOCALE=id
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=id_ID
+APP_MAINTENANCE_DRIVER=file
+BCRYPT_ROUNDS=12
+
+
+# ------------------------------------------------------------
+# 2. WAJIB - database MySQL dari plugin Railway
+# ------------------------------------------------------------
+# CARA PENTING:
+#   Plugin MySQL Railway memberi variabel bernama DATABASE_URL.
+#   Tapi config/database.php proyek ini membaca DB_URL (bukan
+#   DATABASE_URL seperti bawaan Laravel). Jadi salin ISI dari
+#   DATABASE_URL Railway ke DB_URL di sini.
+#
+# Plugin -> Variables -> klik "Reference" untuk melihat nilainya.
+#
+DB_URL=
+DB_CONNECTION=mysql
+
+# Kalau lebih suka diisi manual ( Philippine: tanpa DB_URL),
+# isi yang lima ini sesuai yang tertera di plugin MySQL:
+DB_HOST=
+DB_PORT=3306
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+
+
+# ------------------------------------------------------------
+# 3. WAJIB - session, cache, antrean
+# ------------------------------------------------------------
+# Semuanya memakai tabel di MySQL. Tabel session & cache dibuat
+# otomatis oleh migration.
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+BROADCAST_CONNECTION=log
+
+# Token login disimpan di localStorage (Sanctum), bukan cookie,
+# jadi SESSION_SECURE_COOKIE tidak perlu diubah.
+
+
+# ------------------------------------------------------------
+# 4. WAJIB - filesystem
+# ------------------------------------------------------------
+# WAJIB public. Foto profil dan bukti setoran disimpan di
+# storage/app/public lalu disajikan lewat symlink public/storage.
+# WAJIB pasang VOLUME di mount path /app/storage, kalau tidak foto
+# akan hilang setiap kali container di-restart.
+FILESYSTEM_DISK=public
+
+
+# ------------------------------------------------------------
+# 5. Log
+# ------------------------------------------------------------
+# Di produksi jangan pakai debug, log akan membanjiri storage/logs.
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=warning
+
+
+# ------------------------------------------------------------
+# 6. Email - belum dipakai, notifikasi memakai modal di aplikasi
+# ------------------------------------------------------------
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+
+# ------------------------------------------------------------
+# TIDAK perlu diisi
+# ------------------------------------------------------------
+# VITE_APP_NAME  - ada di .env.example tapi tidak pernah dipakai di
+#                  kode frontend, jadi tidak perlu diset di Railway.
+# VITE_LAN_HOST  - hanya untuk `npm run dev` di jaringan lokal.
+# AWS_* / REDIS_* - proyek ini tidak memakai S3 maupun Redis.
