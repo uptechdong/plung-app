@@ -65,10 +65,6 @@ return new class extends Migration
             $faktor = self::FAKTOR[$kunci] ?? null;
             $iniBerat = in_array($kunci, self::SATUAN_BERAT, true);
 
-            // Kalau warga mengetik satuan BERAT, angkanya harus dikonversi ke Kg
-            // apa pun satuan dasar kategorinya. Inilah yang memperbaiki kasus
-            // "800 Gram" pada kategori per-unit: 800 gram = 0,8, bukan 800.
-            // Kalau yang diketik satuan menghitung, angkanya dipakai apa adanya.
             $beratBaru = ($iniBerat && $faktor !== null)
                 ? round((float) $s->berat * $faktor, 2)
                 : round((float) $s->berat, 2);
@@ -125,7 +121,6 @@ return new class extends Migration
             $laporan[] = sprintf('saldo poin %s: %s -> %s (%s)', $user->nama, $user->poin, $saldoBaru, ($delta >= 0 ? '+' : '') . $delta);
         }
 
-        // Peringkat berbasis total sampah, jadi snapshot lama tidak berlaku lagi.
         DB::table('users')->where('role', 'warga')->update(['peringkat_terakhir' => null]);
 
         foreach ($laporan as $baris) {
@@ -136,7 +131,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Nilai yang sudah dinormalisasi tidak bisa dikembalikan dengan aman.
     }
 
     private function formatBerat(float $berat): string

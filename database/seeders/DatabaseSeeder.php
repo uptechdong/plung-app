@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Pengurus RT
         $pengurus = User::create([
             'nama' => 'Pak Joko (Ketua RT 36)',
             'rumah' => 'RT 36 / RW 09',
@@ -27,7 +26,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'pengurus',
         ]);
 
-        // Warga
         $siti = User::create([
             'nama' => 'Ibu Siti Aminah',
             'rumah' => 'No. 08',
@@ -61,7 +59,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'warga',
         ]);
 
-        // Kategori Sampah
         $organik = KategoriSampah::create([
             'nama' => 'Organik (Dapur/Sisa Makanan)',
             'deskripsi' => 'Sampah mudah membusuk untuk bahan kompos.',
@@ -94,7 +91,6 @@ class DatabaseSeeder extends Seeder
             'satuan' => 'Kg',
         ]);
 
-        // Rewards
         Reward::create(['nama' => 'Minyak Goreng Pouch 1L', 'poin' => 75, 'stok' => 2, 'ket' => 'Kebutuhan Dapur Utama']);
         Reward::create(['nama' => 'Gula Pasir Kristal 1 Kg', 'poin' => 50, 'stok' => 8, 'ket' => 'Manis Alami Siap Pakai']);
         Reward::create(['nama' => 'Beras Medium Super 2.5 Kg', 'poin' => 120, 'stok' => 3, 'ket' => 'Kualitas Pulen Bersih']);
@@ -102,7 +98,6 @@ class DatabaseSeeder extends Seeder
         Reward::create(['nama' => 'Deterjen Bubuk Cuci 800g', 'poin' => 45, 'stok' => 1, 'ket' => 'Harum & Ampuh Noda']);
         Reward::create(['nama' => 'Teh Celup & Kopi Dus Paket', 'poin' => 30, 'stok' => 12, 'ket' => 'Pendamping Santai Warga']);
 
-        // Barang kebutuhan sehari-hari yang paling sering diambil warga.
         Reward::create(['nama' => 'Telur Ayam Negeri 1 Kg', 'poin' => 55, 'stok' => 15, 'ket' => 'Bahan Pokok Kedua Keluarga']);
         Reward::create(['nama' => 'Air Mineral 600 ml (1 Dus)', 'poin' => 25, 'stok' => 20, 'ket' => 'Kebutuhan Minum Warga']);
         Reward::create(['nama' => 'Gas LPG 3 Kg', 'poin' => 75, 'stok' => 10, 'ket' => 'Gas Masak Harian']);
@@ -110,7 +105,6 @@ class DatabaseSeeder extends Seeder
         Reward::create(['nama' => 'Tisu SNI 250 Sheets', 'poin' => 20, 'stok' => 25, 'ket' => 'Kebutuhan Kebersihan Rumah']);
         Reward::create(['nama' => 'Sabun Mandi Cair 450 ml', 'poin' => 35, 'stok' => 12, 'ket' => 'Perawatan Tubuh Warga']);
 
-        // Setoran (verifikasi pending)
         Setoran::create([
             'user_id' => $siti->id,
             'kategori_id' => $anorganik->id,
@@ -135,7 +129,6 @@ class DatabaseSeeder extends Seeder
             'poin' => 15,
         ]);
 
-        // Setoran disetujui (riwayat)
         Setoran::create([
             'user_id' => $budi->id,
             'kategori_id' => $anorganik->id,
@@ -172,7 +165,6 @@ class DatabaseSeeder extends Seeder
             'poin' => 25,
         ]);
 
-        // Penukaran
         $minyak = Reward::where('nama', 'Minyak Goreng Pouch 1L')->first();
         $beras = Reward::where('nama', 'Beras Medium Super 2.5 Kg')->first();
 
@@ -192,7 +184,6 @@ class DatabaseSeeder extends Seeder
             'diambil' => true,
         ]);
 
-        // Riwayat Aktivitas
         RiwayatAktivitas::create([
             'user_id' => $budi->id,
             'jenis' => 'setor_sampah',

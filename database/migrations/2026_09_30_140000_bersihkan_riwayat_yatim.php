@@ -39,8 +39,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Riwayat yatim yang sudah dihapus dan poin yang sudah dikembalikan
-        // tidak bisa dikembalikan dengan aman.
     }
 
     /** Buang riwayat yang menunjuk ke penukaran / setoran yang sudah tidak ada. */
@@ -48,8 +46,6 @@ return new class extends Migration
     {
         $total = 0;
 
-        // Id diambil dulu dengan select, baru dihapus: DELETE dengan JOIN tidak
-        // sah di MySQL.
         $yatimPenukaran = DB::select('SELECT r.id FROM riwayat_aktivitas r
             LEFT JOIN penukaran p ON r.penukaran_id = p.id
             WHERE r.penukaran_id IS NOT NULL AND p.id IS NULL');
@@ -82,7 +78,6 @@ return new class extends Migration
             $table->unsignedInteger('poin')->default(0)->after('reward_id');
         });
 
-        // Isi dari riwayat (nilainya negatif karena pencurangan).
         $baris = DB::table('penukaran as p')
             ->leftJoin('riwayat_aktivitas as r', 'r.penukaran_id', '=', 'p.id')
             ->whereNotNull('r.penukaran_id')

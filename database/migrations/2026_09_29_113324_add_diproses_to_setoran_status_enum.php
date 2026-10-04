@@ -20,7 +20,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('setoran_status_enum', function (Blueprint $table) {
-            //
         });
     }
 };
