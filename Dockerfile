@@ -117,4 +117,11 @@ EXPOSE 8080
 # storage:link -> symlink public/storage -> storage/app/public
 # migrate     -> menyiapkan tabel di database Railway (aman diulang)
 # serve       -> menjalankan aplikasi di 0.0.0.0:$PORT
-CMD ["sh", "-c", "php artisan storage:link --force || true && php artisan migrate --force --no-interaction && php artisan serve --host=0.0.0.0 --port=${PORT}"]
+#
+# --no-reload WAJIB ada. Tanpa flag itu, PHP mengabaikan
+# PHP_CLI_SERVER_WORKERS dan hanya menjalankan satu server.
+#
+# Baris `env | grep ...` hanya untuk sementara: mencetak nama variabel yang
+# ada di dalam container TANPA nilainya, supaya bisa melihat apakah Railway
+# benar-benar meneruskan variabel ke container.
+CMD ["sh", "-c", "env | grep -E '^(APP_KEY|DB_URL|DB_HOST|DB_PORT|APP_DEBUG|APP_ENV|APP_URL|SESSION_DRIVER|FILESYSTEM_DISK|LOG_CHANNEL|CACHE_STORE)=' | sed 's/=.*/=<ADA>/' | sed 's/^/[diag] /' >&2; php artisan storage:link --force || true; php artisan migrate --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
