@@ -98,6 +98,25 @@ COPY --from=frontend /build/public/build ./public/build
 RUN composer dump-autoload --optimize --no-dev --no-interaction \
     && rm -f .env
 
+# --- Folder yang wajib ada dan bisa ditulis ---
+# .dockerignore mengecualikan isi storage/framework, sehingga foldernya
+# ikut hilang dari image. Akibatnya realpath() di config view mengembalikan
+# false dan setiap render Blade gagal dengan:
+#     "Please provide a valid cache path."
+# Folder-folder ini dibuat di sini supaya ikut ter-copy ke volume Railway
+# saat volume pertama kali dibuat, dan dibuat ulang lagi di CMD.
+RUN mkdir -p \
+        storage/framework/views \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/logs \
+        storage/app/public \
+        bootstrap/cache \
+    && printf '*\n!.gitignore\n' > storage/framework/views/.gitignore \
+    && printf '*\n!.gitignore\n' > storage/framework/cache/.gitignore \
+    && printf '*\n!.gitignore\n' > storage/framework/sessions/.gitignore \
+    && printf '*\n!.gitignore\n' > storage/logs/.gitignore
+
 # ------------------------------------------------------------
 # Konfigurasi runtime
 # ------------------------------------------------------------
@@ -127,4 +146,6 @@ EXPOSE 8080
 # akan menghapus semua data setiap kali container start.
 # db:seed sengaja tidak ada di sini: DatabaseSeeder memakai ::create()
 # sehingga tidak idempoten, dan datanya sudah dibuat.
-CMD ["sh", "-c", "php artisan storage:link --force || true; php artisan migrate --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
+# Folder runtime selalu dipastikan ada. Volume Railway di /app/storage
+# bisa ikut terisi ulang dari image, jadi jangan andalkan isi volume.
+CMD ["sh", "-c", "mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs storage/app/public bootstrap/cache; php artisan storage:link --force || true; php artisan migrate --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
