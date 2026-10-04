@@ -1,0 +1,74 @@
+# ============================================================
+# PLUNG! - Sistem Pemilahan Sampah Mandiri
+# ============================================================
+
+# --- Dependensi (di-install ulang lewat composer / npm) ---
+/node_modules
+/vendor
+
+# --- Hasil build frontend (di-make ulang: npm install && npm run build) ---
+# Hash nama file berubah tiap build, jadi ikutnya hanya menambah riwayat
+# commit tanpa manfaat. Bukan rahasia, tapi lebih rapi tidak ikut.
+public/build
+
+# --- KUNCI RAHASIA ---
+# .env memuat APP_KEY, kredensial database, dan kredensial mail.
+# File .env.example yang aman BOLEH ikut commit.
+/.env
+.env.*
+!.env.example
+
+# --- Berkas yang dihasilkan aplikasi saat berjalan ---
+/public/hot
+/public/storage
+/storage/*.key
+
+# Log aplikasi bisa memuat isi query dan data pengguna.
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Cache, session, dan view hasil kompilasi Blade.
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/framework/testing/*
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+# Foto profil dan bukti setoran milik pengguna. Ini DATA PRIBADI dan
+# tidak boleh masuk repo. Foldernya sudah punya .gitignore sendiri
+# (isi: * !.gitignore), tapi aturan di sini ditulis ulang supaya aman
+# walau file .gitignore di dalam folder ikut terhapus.
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/app/private/*
+!/storage/app/private/.gitignore
+
+# --- Dump / backup database (BERBAHAYA: berisi seluruh data) ---
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Log & debug ---
+*.log
+npm-debug.log*
+yarn-error.log*
+/.phpunit.result.cache
+/.phpunit.cache
+
+# --- Editor & sistem operasi ---
+/.idea
+/.vscode
+/.vagrant
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Legacy (sudah tidak dipakai project ini) ---
+/Homestead.json
+/Homestead.yaml
+/npm-debug.log
+/yarn-error.log
