@@ -42,9 +42,12 @@ RUN npm run build
 FROM php:8.3-cli
 
 # Pustaka sistem yang dibutuhkan ekstensi PHP di bawah.
+# libonig-dev WAJIB ada: mbstring memakai mesin regex oniguruma, dan tanpa
+# paket ini `docker-php-ext-install mbstring` gagal saat configure.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         unzip \
+        libonig-dev \
         libzip-dev \
         libpng-dev \
         libjpeg-dev \
@@ -61,7 +64,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         zip \
         bcmath \
         intl \
-    && apt-get purge -y --auto-remove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
