@@ -5,7 +5,7 @@
               <div class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Total Warga Terdaftar</span>
-                  <span id="trend-warga-badge" class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
+                  <span id="trend-warga-badge" class="shrink-0 px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
                     <i data-lucide="user-check" class="w-3 h-3 text-brand-700 dark:text-brand-300"></i> <span id="trend-warga-text">-</span>
                   </span>
                 </div>
@@ -18,7 +18,7 @@
               <div class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Total Sampah Terkelola</span>
-                  <span id="trend-sampah-rt-badge" class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
+                  <span id="trend-sampah-rt-badge" class="shrink-0 px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
                     <i data-lucide="trending-up" class="w-3 h-3"></i> <span id="trend-sampah-rt-text">-</span>
                   </span>
                 </div>
@@ -31,7 +31,7 @@
               <div class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Antrean Verifikasi</span>
-                  <span class="px-2.5 py-0.5 bg-amber-100 dark:bg-amber-950/90 text-amber-700 dark:text-amber-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-amber-800">
+                  <span class="shrink-0 px-2.5 py-0.5 bg-amber-100 dark:bg-amber-950/90 text-amber-700 dark:text-amber-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-amber-800">
                     <i data-lucide="clock" class="w-3 h-3 text-amber-700 dark:text-amber-300"></i> Pending
                   </span>
                 </div>

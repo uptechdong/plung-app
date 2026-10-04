@@ -16,8 +16,8 @@
                 <div>
                   <label id="setor-label-jumlah" class="block mb-1.5 text-slate-700 dark:text-emerald-200">Jumlah Berat</label>
                   <div class="flex gap-2">
-                    <input type="number" id="setor-berat" step="any" min="0" required oninput="updateSatuanDanEstimasiSetor()" placeholder="Masukkan berat sampah" class="flex-1 p-3 rounded-xl bg-slate-50 dark:bg-brand-950 border border-slate-200 dark:border-emerald-800/80 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500">
-                    <select id="setor-satuan-berat" onchange="updateSatuanDanEstimasiSetor()" class="w-28 p-3 rounded-xl bg-slate-50 dark:bg-brand-950 border border-slate-200 dark:border-emerald-800/80 text-slate-900 dark:text-white font-bold cursor-pointer">
+                    <input type="number" id="setor-berat" step="any" min="0" required oninput="updateSatuanDanEstimasiSetor()" placeholder="Masukkan berat sampah" class="flex-1 min-w-0 p-3 rounded-xl bg-slate-50 dark:bg-brand-950 border border-slate-200 dark:border-emerald-800/80 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500">
+                    <select id="setor-satuan-berat" onchange="updateSatuanDanEstimasiSetor()" class="w-24 sm:w-28 shrink-0 p-3 rounded-xl bg-slate-50 dark:bg-brand-950 border border-slate-200 dark:border-emerald-800/80 text-slate-900 dark:text-white font-bold cursor-pointer">
                       <option value="Kg" selected>Kg</option>
                       <option value="Gram">Gram</option>
                     </select>
@@ -39,10 +39,10 @@
                 <div>
                   <label class="block mb-1.5 text-slate-700 dark:text-emerald-200">Unggah Foto Bukti Sampah</label>
                   <div onclick="document.getElementById('setor-foto').click()" class="border border-dashed border-slate-300 dark:border-emerald-700/80 p-6 text-center rounded-xl bg-slate-50/50 dark:bg-brand-950/60 hover:bg-slate-100 dark:hover:bg-brand-900/40 transition-colors cursor-pointer">
-                    <input type="file" id="setor-foto" accept="image/*" capture="environment" class="hidden" onchange="previewSetorFoto(event)">
+                    <input type="file" id="setor-foto" accept="image/*" class="hidden" onchange="previewSetorFoto(event)">
                     <div id="setor-foto-placeholder">
                       <i data-lucide="camera" class="w-6 h-6 mx-auto text-brand-600 dark:text-brand-400 mb-1"></i>
-                      <p class="text-slate-400 dark:text-emerald-300 text-xs font-medium">Klik untuk mengunggah foto bukti atau ambil dari kamera</p>
+                      <p class="text-slate-400 dark:text-emerald-300 text-xs font-medium">Klik untuk mengunggah foto bukti</p>
                     </div>
                     <div id="setor-foto-preview-box" class="hidden space-y-3">
                       <div class="relative w-full h-48 rounded-xl overflow-hidden border border-slate-200 dark:border-emerald-800 bg-black/5 dark:bg-black/30">

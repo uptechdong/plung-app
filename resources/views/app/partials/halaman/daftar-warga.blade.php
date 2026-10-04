@@ -5,14 +5,14 @@
                    134px sehingga tersisa 168px, sedangkan judul pada
                    text-base butuh 190px -- jadi judul selalu terpotong kalau
                    dipaksa satu baris.
-                   Solusinya: di HP judul dapat baris penuh sendiri (truncate
-                   jadi tidak aktif karena ruangnya cukup), tombol turun ke
-                   baris kedua tapi tetap rata kanan lewat self-end.
+                   Solusinya: di HP kontainer jadi flex-col + items-start, jadi
+                   judul dapat baris penuh sendiri dan tombol turun ke baris
+                   kedua dengan lebar secukup isinya (bukan melebar ke tepi).
                    Mulai 640px ke atas keduanya kembali satu baris, tombol
-                   terdorong ke kanan dengan sm:ml-auto. --}}
-              <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 border-b border-slate-100 dark:border-emerald-800/60 pb-3">
+                   terdorong ke kanan dengan sm:justify-between. --}}
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-2.5 border-b border-slate-100 dark:border-emerald-800/60 pb-3">
                 <h2 class="font-bold text-slate-900 dark:text-white text-base truncate">Kelola Data Warga RT 36</h2>
-                <button onclick="openModalTambahWarga()" class="self-end sm:self-auto sm:ml-auto shrink-0 whitespace-nowrap px-4 py-2.5 bg-brand-600 text-white rounded-xl text-xs font-bold active-press flex items-center gap-2 shadow-sm">
+                <button onclick="openModalTambahWarga()" class="shrink-0 whitespace-nowrap px-4 py-2.5 bg-brand-600 text-white rounded-xl text-xs font-bold active-press flex items-center gap-2 shadow-sm">
                   <i data-lucide="user-plus" class="w-4 h-4"></i> Tambah Warga
                 </button>
               </div>

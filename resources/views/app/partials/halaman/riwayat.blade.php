@@ -1,12 +1,12 @@
           <!-- 6. HALAMAN RIWAYAT AKTIVITAS -->
           <section id="page-riwayat" class="page-content hidden space-y-6">
             <div class="bg-white dark:bg-darkcard p-6 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-4 shadow-sm">
-              <div class="flex items-center justify-between border-b border-slate-100 dark:border-emerald-800/60 pb-3">
-                <div>
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-2 border-b border-slate-100 dark:border-emerald-800/60 pb-3">
+                <div class="min-w-0">
                   <h2 class="font-bold text-slate-900 dark:text-white text-base">Riwayat Aktivitas Warga</h2>
                   
                 </div>
-                <span id="badge-total-aktivitas" class="px-3 py-1 bg-emerald-50 dark:bg-brand-950 text-brand-600 dark:text-brand-300 font-extrabold text-xs rounded-xl border border-slate-200 dark:border-emerald-800/80">0 Aktivitas</span>
+                <span id="badge-total-aktivitas" class="shrink-0 px-3 py-1 bg-emerald-50 dark:bg-brand-950 text-brand-600 dark:text-brand-300 font-extrabold text-xs rounded-xl border border-slate-200 dark:border-emerald-800/80">0 Aktivitas</span>
               </div>
 
               {{-- Di bawah 768px tabel 5 kolom tidak muat: setiap kolom cuma

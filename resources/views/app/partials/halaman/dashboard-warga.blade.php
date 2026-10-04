@@ -26,7 +26,7 @@
               <div id="card-poin" class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Total Poin Saya</span>
-                  <span id="trend-poin-badge" class="px-2.5 py-0.5 bg-slate-100 dark:bg-slate-950/90 text-slate-700 dark:text-slate-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
+                  <span id="trend-poin-badge" class="shrink-0 px-2.5 py-0.5 bg-slate-100 dark:bg-slate-950/90 text-slate-700 dark:text-slate-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
                     <i data-lucide="minus" class="w-3 h-3"></i> <span>0</span>
                   </span>
                 </div>
@@ -39,7 +39,7 @@
               <div class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Total Sampah Dipilah</span>
-                  <span id="trend-sampah-badge" class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
+                  <span id="trend-sampah-badge" class="shrink-0 px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
                     <i data-lucide="trending-up" class="w-3 h-3"></i> <span>-</span>
                   </span>
                 </div>
@@ -52,7 +52,7 @@
               <div class="smooth-zoom bg-white dark:bg-darkcard p-5 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-3 relative overflow-hidden shadow-sm">
                 <div class="flex items-center justify-between relative z-10">
                   <span class="text-xs text-slate-500 dark:text-emerald-300 font-bold">Peringkat Pilah Sampah</span>
-                  <span id="trend-peringkat-badge" class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
+                  <span id="trend-peringkat-badge" class="shrink-0 px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/90 text-brand-700 dark:text-brand-300 font-extrabold text-[10px] rounded-full flex items-center gap-1 border border-transparent dark:border-emerald-800">
                     <i data-lucide="trending-up" class="w-3 h-3"></i> <span>-</span>
                   </span>
                 </div>

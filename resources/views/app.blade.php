@@ -920,12 +920,12 @@ function formatUkuran(byte) {
       renderIkon();
     }
 
-    function setTrendBadge(badgeId, dir, text, sameIcon = 'minus') {
+    function setTrendBadge(badgeId, dir, text, sameIcon = 'minus', sameColor = null) {
       const badge = document.getElementById(badgeId);
       if (!badge) return;
 
       const icon = dir === 'up' ? 'trending-up' : dir === 'down' ? 'trending-down' : sameIcon;
-      const colorClass = TREND_BADGE_COLORS[dir] || TREND_BADGE_COLORS.same;
+      const colorClass = (dir === 'same' && sameColor) ? sameColor : (TREND_BADGE_COLORS[dir] || TREND_BADGE_COLORS.same);
 
       badge.className = TREND_BADGE_BASE + ' ' + colorClass;
       badge.removeAttribute('title');
@@ -968,13 +968,13 @@ function formatUkuran(byte) {
           const sampahDir = data.trend_sampah.direction;
           const sampahPct = Math.abs(Math.round(data.trend_sampah.percentage));
           const sampahLabel = (sampahDir === 'up' ? '+' : sampahDir === 'down' ? '-' : '') + sampahPct + '%';
-          setTrendBadge('trend-sampah-badge', sampahDir, sampahLabel);
+          setTrendBadge('trend-sampah-badge', sampahDir, sampahLabel, 'minus');
         }
         if (data.trend_peringkat) {
           const dir = data.trend_peringkat.direction;
           const val = Math.abs(data.trend_peringkat.value);
           const label = dir === 'up' ? '+' + val : dir === 'down' ? '-' + val : '0';
-          setTrendBadge('trend-peringkat-badge', dir, label);
+          setTrendBadge('trend-peringkat-badge', dir, label, 'trending-up', TREND_BADGE_COLORS.up);
         }
 
         if (data.trend_bulanan) {
@@ -1749,8 +1749,7 @@ function formatUkuran(byte) {
       }
 
       showModernModal('confirm', 'Hapus Hadiah', 'Hapus ' + item.nama + ' dari katalog?'
-        + ' Semua kupon barang ini ikut dibatalkan, dan poin yang sudah dipotong'
-        + ' dikembalikan ke warga terkait.', async () => {
+        , async () => {
         try {
           const res = await apiFetch('/rewards/' + item.id, { method: 'DELETE' });
 
@@ -2267,7 +2266,7 @@ function formatUkuran(byte) {
     function hapusSetorFoto(e) {
       if (e) e.stopPropagation();
       const input = document.getElementById('setor-foto');
-      input.value = '';
+      if (input) input.value = '';
       setorFotoSiap = null;
       setorFotoProses = null;
       document.getElementById('setor-foto-placeholder').classList.remove('hidden');
