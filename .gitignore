@@ -34,6 +34,10 @@ public/build
 /storage/logs/*
 !/storage/logs/.gitignore
 
+# Backup database. Isinya termasuk kredensial dan data pengguna, tidak
+# boleh masuk repo.
+/storage/backup
+
 # Cache, session, dan view hasil kompilasi Blade.
 /storage/framework/cache/*
 /storage/framework/sessions/*
