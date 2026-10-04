@@ -140,10 +140,27 @@
         throw new Error('Gagal terhubung ke server.');
       }
 
-      if (response.status === 401 && authToken && url !== '/login') {
+      if (response.status === 401 && url !== '/login') {
+        // 401 di luar halaman login berarti token yang dipakai sudah tidak
+        // berlaku. Dua sebabnya: akun ini login di perangkat lain (token
+        // dicabut server), atau token sudah kedaluwarsa/kadaluarsa.
+        // Syarat authToken sengaja tidak ikut diperiksa: kalau localStorage
+        // sudah kosong, user tetap perlu tahu kenapa dia ditendang --
+        // tanpa itu dia hanya melihat halaman login tanpa penjelasan.
+        const punyaTokenLokal = !!authToken;
         localStorage.removeItem('plung_token');
         authToken = null;
         tampilkanLogin();
+
+        showModernModal(
+          'info',
+          'Sesi Berakhir',
+          punyaTokenLokal
+            ? 'Akun ini sudah login di perangkat lain. Untuk keamanan, hanya satu perangkat yang bisa dipakai. Silakan masuk kembali di sini.'
+            : 'Sesi Anda sudah tidak berlaku. Silakan masuk kembali.'
+        );
+        const modalNotif = document.getElementById('modal-notif');
+        if (modalNotif) modalNotif.classList.add('z-[70]');
         throw new Error('Sesi berakhir');
       }
 
@@ -1271,6 +1288,15 @@ function formatUkuran(byte) {
           closeModernModal();
           if (onConfirm) onConfirm();
         };
+      } else if (type === 'info') {
+        iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center mx-auto bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-300 border border-transparent dark:border-slate-700';
+        iconBox.innerHTML = '<i data-lucide="info" class="w-6 h-6"></i>';
+
+        actionsEl.innerHTML = '<button id="modal-btn-ok" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs active-press shadow-sm">Mengerti</button>';
+        document.getElementById('modal-btn-ok').onclick = () => {
+          closeModernModal();
+          if (onConfirm) onConfirm();
+        };
       } else {
         iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center mx-auto bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-transparent dark:border-amber-800';
         iconBox.innerHTML = '<i data-lucide="help-circle" class="w-6 h-6"></i>';
@@ -1288,7 +1314,13 @@ function formatUkuran(byte) {
     }
 
     function closeModernModal() {
-      document.getElementById('modal-notif').classList.add('hidden');
+      const modal = document.getElementById('modal-notif');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      // Kembalikan z-index ke default. Pesan "sesi berakhir" menaikkan
+      // z-70 supaya menutupi layar login; tanpa dikembalikan, modal
+      // berikutnya akan ikut melayang di atas semua layar.
+      modal.classList.remove('z-[70]');
     }
 
     function initChartBulanan(chartData) {
@@ -1808,7 +1840,7 @@ function formatUkuran(byte) {
         const sedangEdit = id !== '' && id !== null && id !== undefined;
 
         if (!sedangEdit && document.getElementById('reward-form-title').innerText === 'Edit Item Hadiah') {
-          showModernModal('danger', 'Gagal', 'Sesi edit terputus sehingga id item hilang. Silakan klik tombol Edit sekali lagi.');
+          showModernModal('danger', 'Gagal', 'Sesi edit terputus sehingga id item hilang. Silakan klik tombol Edit sekali lagi');
           return;
         }
 

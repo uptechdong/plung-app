@@ -30,13 +30,32 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $this->masukSatuPerangkat($user);
 
         return response()->json([
             'success' => true,
             'user' => $this->formatUser($user),
             'token' => $token,
         ]);
+    }
+
+    /**
+     * Satu akun hanya boleh aktif di satu perangkat.
+     *
+     * Setiap login baru membatalkan token milik perangkat lain, sehingga
+     * tidak ada dua perangkat yang memakai akun yang sama sekaligus. Ini
+     * penting untuk aplikasi sampah: satu KK tidak boleh bisa menyetor
+     * dua kali dari dua HP berbeda karena sesi ganda.
+     *
+     * Token yang dicabut tidak dihapus permanen dari tabel -- tokennya
+     * dibuang dari sisi klien (localStorage) saat perangkat lama menutup
+     * aplikasi atau menerima 401.
+     */
+    private function masukSatuPerangkat(User $user): string
+    {
+        $user->tokens()->delete();
+
+        return $user->createToken('api-token')->plainTextToken;
     }
 
     public function logout(): JsonResponse
