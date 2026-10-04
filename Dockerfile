@@ -72,10 +72,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # --- Dependensi PHP (layer di-cache agar build berikutnya cepat) ---
-COPY composer.json composer.lock ./
-# .env.example disalin sementara supaya `artisan package:discover` bisa boot
-# saat build. APP_KEY asli come dari Railway, bukan dari file ini, dan
-# .env ini dihapus lagi di bawah supaya tidak menimpa variabel Railway.
+# .env.example WAJIB ikut di-COPY sini, dipakai pada langkah di bawah.
+COPY composer.json composer.lock .env.example ./
+# .env.example disalin jadi .env sementara supaya `artisan package:discover`
+# (yang dijalankan oleh script post-autoload-dump) bisa boot saat build.
+# APP_KEY asli datang dari Railway, bukan dari file ini, dan .env ini
+# dihapus lagi di bawah supaya tidak menimpa variabel Railway.
 RUN cp .env.example .env \
     && composer install \
         --no-dev \
