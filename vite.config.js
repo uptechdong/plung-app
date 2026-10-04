@@ -34,8 +34,6 @@ export default defineConfig({
         host: '0.0.0.0',
         port: 5173,
         strictPort: true,
-        // Wajib: tanpa ini hot-file berisi http://0.0.0.0:5173 dan
-        // perangkat lain di jaringan tidak bisa memuat aset.
         hmr: { host: lanHost },
         watch: {
             ignored: ['**/storage/framework/views/**'],
