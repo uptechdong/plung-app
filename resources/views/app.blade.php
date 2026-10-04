@@ -93,6 +93,7 @@
     let currentUserSession = null;
     let uploadedFotoDataUrl = null;
     let uploadedFotoProses = null;
+    let fotoProfilDihapus = false;
 
     let setorFotoSiap = null;
     let setorFotoProses = null;
@@ -551,6 +552,11 @@ function formatUkuran(byte) {
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
       const infoEl = document.getElementById('ep-foto-info');
+      const hapusBtn = document.getElementById('ep-hapus-foto');
+
+      // Memilih berkas baru membatalkan penanda hapus yang sebelumnya aktif.
+      fotoProfilDihapus = false;
+      if (hapusBtn) hapusBtn.classList.remove('hidden');
 
       previewImg.src = URL.createObjectURL(file);
       previewImg.classList.remove('hidden');
@@ -571,6 +577,32 @@ function formatUkuran(byte) {
             infoEl.innerText = formatUkuran(file.size) + ' (tidak dikompres)';
           }
         }));
+    }
+
+    /**
+     * Tandai foto profil untuk dihapus. Tidak langsung menyentuh server:
+     *Berkas lama baru dihapus saat profil disimpan, supaya pengguna bisa
+     * batal dengan memilih berkas lain atau membatalkan halaman.
+     */
+    function hapusFotoProfil() {
+      const previewImg = document.getElementById('ep-preview-foto');
+      const previewIcon = document.getElementById('ep-preview-icon');
+      const inputFoto = document.getElementById('ep-upload-foto');
+      const infoEl = document.getElementById('ep-foto-info');
+      const hapusBtn = document.getElementById('ep-hapus-foto');
+
+      fotoProfilDihapus = true;
+      uploadedFotoDataUrl = null;
+      uploadedFotoProses = null;
+
+      if (inputFoto) inputFoto.value = '';
+      if (previewImg) {
+        previewImg.removeAttribute('src');
+        previewImg.classList.add('hidden');
+      }
+      if (previewIcon) previewIcon.classList.remove('hidden');
+      if (hapusBtn) hapusBtn.classList.add('hidden');
+      if (infoEl) infoEl.innerText = 'Foto akan dihapus saat profil disimpan';
     }
 
     function applyUserProfileImage(photoUrl) {
@@ -1131,20 +1163,25 @@ function formatUkuran(byte) {
       const previewIcon = document.getElementById('ep-preview-icon');
       const inputFoto = document.getElementById('ep-upload-foto');
       const infoFoto = document.getElementById('ep-foto-info');
+      const hapusFoto = document.getElementById('ep-hapus-foto');
 
       // Bersihkan sisa pilihan berkas dari kunjungan sebelumnya.
       if (inputFoto) inputFoto.value = '';
       if (infoFoto) infoFoto.innerText = 'Pilih berkas gambar JPG/PNG';
       uploadedFotoProses = null;
+      fotoProfilDihapus = false;
 
       uploadedFotoDataUrl = currentUserSession ? currentUserSession.foto : null;
       if (uploadedFotoDataUrl) {
         previewImg.src = uploadedFotoDataUrl;
         previewImg.classList.remove('hidden');
         previewIcon.classList.add('hidden');
+        // Tombol hapus hanya muncul kalau memang ada foto di server.
+        if (hapusFoto) hapusFoto.classList.remove('hidden');
       } else {
         previewImg.classList.add('hidden');
         previewIcon.classList.remove('hidden');
+        if (hapusFoto) hapusFoto.classList.add('hidden');
       }
 
       if (currentUserSession.role === 'pengurus') {
@@ -1187,6 +1224,7 @@ function formatUkuran(byte) {
         }
       }
       if (uploadedFotoDataUrl) payload.foto = uploadedFotoDataUrl;
+      if (fotoProfilDihapus) payload.hapus_foto = true;
 
       try {
         const res = await apiFetch('/profile', {

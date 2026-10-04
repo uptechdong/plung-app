@@ -7,9 +7,14 @@
 
               <form onsubmit="simpanProfilUser(event)" class="space-y-4 text-xs font-semibold">
                 <div class="p-4 bg-slate-50 dark:bg-brand-950 rounded-xl border border-slate-200/80 dark:border-emerald-800/80 flex items-center gap-4">
-                  <div class="relative w-16 h-16 rounded-2xl border-2 border-slate-200 dark:border-emerald-700 text-brand-600 dark:text-brand-300 flex items-center justify-center overflow-hidden shrink-0 shadow-sm bg-white dark:bg-darkcard">
-                    <img id="ep-preview-foto" src="" alt="Preview Foto" class="w-full h-full object-cover hidden">
-                    <i id="ep-preview-icon" data-lucide="user" class="w-8 h-8"></i>
+                  <div class="relative w-16 h-16 shrink-0">
+                    <div class="w-full h-full rounded-2xl border-2 border-slate-200 dark:border-emerald-700 text-brand-600 dark:text-brand-300 flex items-center justify-center overflow-hidden shadow-sm bg-white dark:bg-darkcard">
+                      <img id="ep-preview-foto" src="" alt="Preview Foto" class="w-full h-full object-cover hidden">
+                      <i id="ep-preview-icon" data-lucide="user" class="w-8 h-8"></i>
+                    </div>
+                    <button type="button" id="ep-hapus-foto" onclick="hapusFotoProfil()" class="hidden absolute -top-1.5 -right-1.5 p-1 rounded-full bg-rose-500 text-white shadow-md hover:bg-rose-600 active:scale-90 transition-transform" aria-label="Hapus foto profil" title="Hapus foto profil">
+                      <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
                   </div>
                   <div class="min-w-0 space-y-1.5">
                     <label class="block text-slate-700 dark:text-emerald-200 font-bold">Foto Profil</label>

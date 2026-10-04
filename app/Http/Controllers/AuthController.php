@@ -66,6 +66,7 @@ class AuthController extends Controller
             'wa' => 'nullable|string',
             'username' => 'required|string|unique:users,username,' . $user->id,
             'password' => 'nullable|string',
+            'hapus_foto' => 'nullable|boolean',
         ]);
 
         $user->nama = $data['nama'];
@@ -77,7 +78,16 @@ class AuthController extends Controller
             $user->password = Hash::make($data['password']);
         }
 
-        if ($request->hasFile('foto')) {
+        if ($request->boolean('hapus_foto')) {
+            // Permintaan hapus wins atas berkas baru, supaya tidak ada dua
+            // operasi storage dalam satu request. Foto lama dihapus dari disk
+            // hanya kalau benar-benar milik pengguna ini (bukan URL_seed
+            // dari data awal).
+            if ($user->foto && ! str_starts_with($user->foto, 'http') && ! str_starts_with($user->foto, 'data:')) {
+                Storage::disk('foto')->delete($user->foto);
+            }
+            $user->foto = null;
+        } elseif ($request->hasFile('foto')) {
             $request->validate([
                 'foto' => 'image|max:3072',
             ]);
