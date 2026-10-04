@@ -152,12 +152,12 @@
             <td class="p-2 border-r border-slate-200 font-semibold">{{ ((float)$s->berat == (int)$s->berat ? (int)$s->berat : (float)$s->berat) }} {{ $s->satuan }}</td>
             <td class="p-2 border-r border-slate-200 text-right font-bold text-emerald-700">+{{ $s->poin }}</td>
             <td class="p-2 text-center font-bold">
-              @if($s->status === 'disetujui')
-                <span class="text-emerald-700">Disetujui</span>
+              @if($s->status === 'diterima')
+                <span class="text-emerald-700">Diterima</span>
               @elseif($s->status === 'ditolak')
                 <span class="text-rose-600">Ditolak</span>
               @else
-                <span class="text-amber-600">Pending</span>
+                <span class="text-amber-600">Diproses</span>
               @endif
             </td>
           </tr>

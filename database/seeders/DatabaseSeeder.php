@@ -113,7 +113,7 @@ class DatabaseSeeder extends Seeder
             'tgl' => '2026-09-24',
             'catatan' => 'Ditaruh dalam kantong plastik bening di teras depan rumah.',
             'foto' => 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&auto=format&fit=crop&q=80',
-            'status' => 'pending',
+            'status' => 'diproses',
             'poin' => 30,
         ]);
 
@@ -125,7 +125,7 @@ class DatabaseSeeder extends Seeder
             'tgl' => '2026-09-24',
             'catatan' => 'Sampah dapur sudah ditiriskan hingga kering.',
             'foto' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80',
-            'status' => 'pending',
+            'status' => 'diproses',
             'poin' => 15,
         ]);
 
