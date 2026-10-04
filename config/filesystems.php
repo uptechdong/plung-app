@@ -60,6 +60,40 @@ return [
             'report' => false,
         ],
 
+        /*
+        |----------------------------------------------------------------------
+        | Disk Foto Profil & Bukti Setoran
+        |----------------------------------------------------------------------
+        |
+        | Sengaja dipisah dari disk `public` supaya driver-nya bisa diganti
+        | lewat environment variable tanpa menyentuh kode. Secara lokal
+        | (FOTO_DRIVER=local) perilakunya sama seperti disk `public`: file
+        | ditulis ke storage/app/public dan disajikan lewat symlink
+        | public/storage.
+        |
+        | Di hosting dengan filesystem read-only, misalnya Vercel, isi
+        | FOTO_DRIVER=s3 lalu lengkapi kredensialnya. Kode pemanggil tidak
+        | berubah sama sekali, termasuk pemanggilan Storage::url() untuk
+        | membaca kembali file-nya.
+        |
+        */
+
+        'foto' => [
+            'driver' => env('FOTO_DRIVER', 'local'),
+            'key' => env('FOTO_KEY'),
+            'secret' => env('FOTO_SECRET'),
+            'region' => env('FOTO_REGION', 'auto'),
+            'bucket' => env('FOTO_BUCKET'),
+            'endpoint' => env('FOTO_ENDPOINT'),
+            'url' => env('FOTO_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
+            'use_path_style_endpoint' => env('FOTO_PATH_STYLE', true),
+            // Driver s3 memakai `root` sebagai prefix key, jadi harus kosong.
+            'root' => env('FOTO_DRIVER', 'local') === 's3' ? '' : storage_path('app/public'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*

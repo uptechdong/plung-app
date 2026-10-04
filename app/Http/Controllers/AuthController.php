@@ -82,9 +82,9 @@ class AuthController extends Controller
                 'foto' => 'image|max:3072',
             ]);
             if ($user->foto && !str_starts_with($user->foto, 'http') && !str_starts_with($user->foto, 'data:')) {
-                Storage::disk('public')->delete($user->foto);
+                Storage::disk('foto')->delete($user->foto);
             }
-            $user->foto = $request->file('foto')->store('profil', 'public');
+            $user->foto = $request->file('foto')->store('profil', 'foto');
         } elseif ($request->filled('foto') && str_starts_with($request->input('foto'), 'data:image')) {
             $imageParts = explode(';base64,', $request->input('foto'));
             if (count($imageParts) === 2) {
@@ -102,9 +102,9 @@ class AuthController extends Controller
                 }
 
                 $fileName = 'profil/' . uniqid() . '.' . $ext;
-                Storage::disk('public')->put($fileName, $decoded);
+                Storage::disk('foto')->put($fileName, $decoded);
                 if ($user->foto && !str_starts_with($user->foto, 'http') && !str_starts_with($user->foto, 'data:')) {
-                    Storage::disk('public')->delete($user->foto);
+                    Storage::disk('foto')->delete($user->foto);
                 }
                 $user->foto = $fileName;
             }
@@ -122,7 +122,7 @@ class AuthController extends Controller
             if (str_starts_with($user->foto, 'http') || str_starts_with($user->foto, 'data:')) {
                 $fotoUrl = $user->foto;
             } else {
-                $fotoUrl = asset('storage/' . $user->foto);
+                $fotoUrl = Storage::disk('foto')->url($user->foto);
             }
         }
 

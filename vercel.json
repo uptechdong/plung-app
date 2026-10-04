@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "api/index.php",
+      "use": "@vercel/php",
+      "config": {
+        "includeFiles": [
+          "storage/framework/views/.gitkeep",
+          "storage/logs/.gitkeep",
+          "bootstrap/cache/.gitignore"
+        ],
+        "excludeFiles": [
+          "storage/framework/cache/**",
+          "storage/framework/sessions/**",
+          "storage/framework/views/**",
+          "storage/app/public/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
+  ]
+}

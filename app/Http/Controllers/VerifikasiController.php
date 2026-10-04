@@ -30,7 +30,7 @@ class VerifikasiController extends Controller
                 'berat' => ((float) $s->berat == (int) $s->berat ? (int) $s->berat : (float) $s->berat) . ' ' . $s->satuan,
                 'tgl' => $s->tgl ? $s->tgl->locale('id')->translatedFormat('d M Y') : '-',
                 'catatan' => $s->catatan,
-                'foto' => $s->foto ? (str_starts_with($s->foto, 'http') ? $s->foto : asset('storage/' . $s->foto)) : null,
+                'foto' => $s->foto ? (str_starts_with($s->foto, 'http') ? $s->foto : Storage::disk('foto')->url($s->foto)) : null,
                 'status' => $s->status,
                 'poin' => (int) $s->poin,
             ]);
