@@ -104,8 +104,6 @@ class LoginRoleTest extends TestCase
         $res = $this->login('warga_uji', 'pengurus');
 
         $res->assertStatus(401);
-        // Pesannya harus sama persis dengan "salah" biasa, jangan bocorkan
-        // bahwa username-nya ada tapi role-nya beda.
         $this->assertSame(
             'Username atau kata sandi yang Anda masukkan salah',
             $res->json('message')
@@ -153,7 +151,6 @@ class LoginRoleTest extends TestCase
     {
         $this->buat('warga');
 
-        // Tanpa role -> 422. Ini yang mencegah tab diabaikan oleh klien.
         $this->postJson('/api/login', [
             'username' => 'warga_uji',
             'password' => 'rahasia123',
