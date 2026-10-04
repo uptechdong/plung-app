@@ -11,6 +11,13 @@
 # commit tanpa manfaat. Bukan rahasia, tapi lebih rapi tidak ikut.
 public/build
 
+# --- Test otomatis (dipakai lokal saja, tidak ikut repo) ---
+# Folder tests/ tidak di-push ke GitHub. Berkasnyatetap ada di komputer ini
+# dan test tetap jalan lewat `php artisan test`, hanya tidak dilacak git.
+# CATATAN: phpunit.xml masih menunjuk ke tests/Unit dan tests/Feature, jadi
+# jangan ikut menghapus kedua folder itu dari disk.
+/tests
+
 # --- KUNCI RAHASIA ---
 # .env memuat APP_KEY, kredensial database, dan kredensial mail.
 # File .env.example yang aman BOLEH ikut commit.
