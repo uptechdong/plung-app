@@ -3,7 +3,6 @@
             <div class="bg-white dark:bg-darkcard p-6 rounded-2xl border border-slate-200/70 dark:border-emerald-800/80 space-y-5 max-w-xl mx-auto shadow-sm">
               <div>
                 <h2 id="ep-title-heading" class="font-bold text-slate-900 dark:text-white text-base">Edit Profil Akun</h2>
-                <p id="ep-subtitle-heading" class="text-xs text-slate-400 dark:text-emerald-400 font-medium">Perbarui data profil dan kata sandi Anda</p>
               </div>
 
               <form onsubmit="simpanProfilUser(event)" class="space-y-4 text-xs font-semibold">

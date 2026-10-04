@@ -1126,7 +1126,6 @@ function formatUkuran(byte) {
 
     function openEditProfilFromMenu() {
       const headingTitle = document.getElementById('ep-title-heading');
-      const headingSub = document.getElementById('ep-subtitle-heading');
       const labelRumah = document.getElementById('ep-label-rumah');
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
@@ -1150,11 +1149,9 @@ function formatUkuran(byte) {
 
       if (currentUserSession.role === 'pengurus') {
         headingTitle.innerText = "Edit Profil Pengurus RT";
-        headingSub.innerText = "Perbarui profil dan akses akun pengurus RT";
         labelRumah.innerText = "Jabatan / Wilayah RT";
       } else {
         headingTitle.innerText = "Edit Profil Warga";
-        headingSub.innerText = "Perbarui data profil dan kata sandi Anda";
         labelRumah.innerText = "Nomor Rumah / Blok";
       }
 
