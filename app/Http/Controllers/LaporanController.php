@@ -33,7 +33,6 @@ class LaporanController extends Controller
         $bulanParam = $request->query('bulan', now()->format('Y-m'));
         $format = strtolower($request->query('format', 'excel'));
 
-        // Query data
         $query = Setoran::with(['user', 'kategori']);
 
         if ($bulanParam !== 'all') {
@@ -42,7 +41,6 @@ class LaporanController extends Controller
                 $query->whereYear('tgl', $date->year)->whereMonth('tgl', $date->month);
                 $periodeText = $date->locale('id')->translatedFormat('F Y');
             } catch (\Exception $e) {
-                // If format was "September 2026" or similar
                 $periodeText = $bulanParam;
             }
         } else {
@@ -51,7 +49,6 @@ class LaporanController extends Controller
 
         $setorans = $query->orderBy('tgl', 'asc')->get();
 
-        // Calculate summary
         $totalBerat = 0;
         $totalPoin = 0;
         $kategoriSummary = [];
@@ -126,17 +123,14 @@ class LaporanController extends Controller
         return response()->stream(function () use ($periodeText, $setorans, $kategoriSummary, $totalBerat, $totalPoin) {
             $handle = fopen('php://output', 'w');
 
-            // Add UTF-8 BOM for Microsoft Excel compatibility
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // Title
             fputcsv($handle, ['REKAPITULASI PENGELOLAAN SAMPAH MANDIRI - PLUNG!']);
             fputcsv($handle, ['WILAYAH RT 36 / RW 09']);
             fputcsv($handle, ['Periode:', $periodeText]);
             fputcsv($handle, ['Tanggal Cetak:', Carbon::now()->locale('id')->translatedFormat('d F Y, H:i') . ' WIB']);
             fputcsv($handle, []);
 
-            // Summary by Category
             fputcsv($handle, ['--- RINGKASAN PER KATEGORI SAMPAH ---']);
             fputcsv($handle, ['No', 'Kategori Sampah', 'Jumlah Transaksi', 'Total Berat (Kg)', 'Total Poin']);
             $noKat = 1;
@@ -158,7 +152,6 @@ class LaporanController extends Controller
             ]);
             fputcsv($handle, []);
 
-            // Transaction details
             fputcsv($handle, ['--- RINCIAN TRANSAKSI SETORAN WARGA ---']);
             fputcsv($handle, ['No', 'Tanggal', 'Nama Warga', 'No. Rumah / Blok', 'Kategori Sampah', 'Berat / Jumlah', 'Poin', 'Status', 'Catatan']);
 

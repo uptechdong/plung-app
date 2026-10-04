@@ -44,9 +44,6 @@ class VerifikasiController extends Controller
             'status' => 'required|in:diterima,ditolak',
         ]);
 
-        // Peringkat dihitung dari TOTAL SAMPAH terverifikasi, jadi snapshot
-        // diambil SEBELUM status berubah supaya rank yang terkunci belum
-        // termasuk setoran ini sendiri.
         $totalBerubah = ($data['status'] === 'diterima') !== ($setoran->status === 'diterima');
         if ($totalBerubah) {
             $this->peringkat->snapshot();
@@ -89,7 +86,6 @@ class VerifikasiController extends Controller
         ]);
         $penukaran->update(['diambil' => $data['diambil']]);
 
-        // Update status di RiwayatAktivitas agar sinkron
         RiwayatAktivitas::where('penukaran_id', $penukaran->id)
             ->update(['status' => $data['diambil'] ? 'sudah_ditukar' : 'belum_ditukar']);
 

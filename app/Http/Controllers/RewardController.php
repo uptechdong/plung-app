@@ -54,18 +54,12 @@ class RewardController extends Controller
 
     public function destroy(Reward $reward): JsonResponse
     {
-        // Menghapus hadiah berarti membatalkan semua penukaran barang ini:
-        // kuponnya dihapus, riwayatnya ikut terhapus (cascade), dan poin yang
-        // sudah dipotong dikembalikan ke warga. Tanpa ini, kupon jadi yatim,
-        // tetap muncul di Riwayat warga padahal barangnya sudah tidak ada, dan
-        // saldo poinnya tidak pernah kembali.
         $kupon = Penukaran::where('reward_id', $reward->id)->get();
 
         $poinDikembalikan = 0;
         foreach ($kupon as $p) {
             $poin = (int) $p->poin;
 
-            // Cadangan untuk penukaran lama yang belum punya kolom poin.
             if ($poin <= 0) {
                 $dariRiwayat = RiwayatAktivitas::where('penukaran_id', $p->id)->value('poin');
                 $poin = abs((int) $dariRiwayat);
@@ -100,7 +94,6 @@ class RewardController extends Controller
             return response()->json(['success' => false, 'message' => 'Poin Anda belum mencukupi.'], 400);
         }
 
-        // Generate kode kupon yang unik
         do {
             $kode = 'KP-' . random_int(100, 999);
         } while (Penukaran::where('kode_kupon', $kode)->exists());
@@ -109,8 +102,6 @@ class RewardController extends Controller
             'kode_kupon' => $kode,
             'user_id' => $user->id,
             'reward_id' => $reward->id,
-            // Dicatat supaya kalau hadiah ini nanti dihapus, jumlah poin yang
-            // harus dikembalikan tahu dengan tepat.
             'poin' => $reward->poin,
             'tgl' => now(),
             'diambil' => false,
@@ -118,11 +109,6 @@ class RewardController extends Controller
 
         $reward->decrement('stok');
 
-        // Peringkat TIDAK dikunci di sini. Peringkat dihitung dari total
-        // sampah terverifikasi, sedangkan menukar hadiah hanya mengurangi
-        // poin dan stok. Kalau peringkat ikut dikunci saat tukar, naik-turun
-        // peringkat akan ikut bergerak karena penukaran -- padahal yang
-        // seharusnya menentukan peringkat adalah sampah yang disetorkan.
         $user->decrement('poin', $reward->poin);
 
         RiwayatAktivitas::create([

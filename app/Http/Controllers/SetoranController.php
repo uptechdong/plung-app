@@ -48,20 +48,11 @@ class SetoranController extends Controller
             'berat' => 'required|numeric|min:0.001|max:100000',
             'satuan' => 'required|string',
             'catatan' => 'nullable|string',
-            // Batas 3 MB (bukan 2 MB) disamakan dengan foto profil. Foto kamera HP
-            // sekarang bisa 3-8 MB; sisi klien sudah mengompres gambar ke
-            // bawah 1 MB sebelum dikirim, jadi angka ini cuma jaring
-            // pengaman kalau kompresi gagal (mis. berkas HEIC).
             'foto' => 'nullable|image|max:3072',
         ]);
 
         $kategori = KategoriSampah::findOrFail($data['kategori_id']);
 
-        // Berat WAJIB disimpan dalam satuan dasar kategori, karena poin_per_unit
-        // dihitung per satuan itu. Kalau warga mengetik "800" dengan satuan Gram
-        // pada kategori berpunit Kg, nilainya harus jadi 0,8 -- bukan 800.
-        // Tanpa normalisasi ini, 800 Gram terhitung 800 Kg dan poinnya meledak
-        // 1000 kali.
         $satuanDasar = trim((string) $kategori->satuan);
         $beratDasar = $this->keSatuanDasar((float) $data['berat'], (string) $data['satuan'], $satuanDasar);
 
@@ -86,8 +77,6 @@ class SetoranController extends Controller
             ]);
         }
 
-        // Dibulatkan, bukan dipotong, supaya warga tidak kehilangan poin
-        // karena sisa pecahan.
         $poin = (int) round($beratDasar * $kategori->poin_per_unit);
 
         $fotoPath = null;
@@ -169,9 +158,6 @@ class SetoranController extends Controller
         $dasarAdalahBerat = strtolower(trim($satuanDasar)) === 'kg';
         $iniAdalahBerat = in_array($kunci, self::SATUAN_BERAT, true);
 
-        // Kategori ber-unit tidak boleh diisi satuan berat, dan sebaliknya.
-        // Kalau ini dilewati, "800 Gram" pada kategori B3 (25 poin per Unit)
-        // akan ditafsirkan 800 Unit = 20.000 poin, bukan 0,8.
         if ($dasarAdalahBerat !== $iniAdalahBerat) {
             return null;
         }
@@ -193,11 +179,6 @@ class SetoranController extends Controller
             'status' => 'required|in:diterima,ditolak',
         ]);
 
-        // Peringkat warga dihitung dari TOTAL SAMPAH terverifikasi, jadi
-        // snapshot harus diambil SEBELUM status berubah -- kalau tidak, rank
-        // yang terkunci sudah termasuk setoran ini sendiri. Cukup dijalankan
-        // saat status benar-benar pindah (ditolak <-> diterima), karena itu
-        // satu-satunya momen total sampah warga bertambah atau berkurang.
         $totalBerubah = ($data['status'] === 'diterima') !== ($setoran->status === 'diterima');
         if ($totalBerubah) {
             $this->peringkat->snapshot();
@@ -213,12 +194,10 @@ class SetoranController extends Controller
             }
         }
 
-        // Update status di RiwayatAktivitas agar sinkron dengan setoran
         try {
             RiwayatAktivitas::where('setoran_id', $setoran->id)
                 ->update(['status' => $data['status']]);
         } catch (\Exception $e) {
-            // Log error tapi jangan gagalkan proses verifikasi
             \Log::error('Gagal update riwayat: ' . $e->getMessage());
         }
 
@@ -235,8 +214,6 @@ class SetoranController extends Controller
                 'nama' => $k->nama,
                 'poin_per_unit' => $k->poin_per_unit,
                 'satuan' => $k->satuan,
-                // Satuan yang boleh dipilih warga untuk kategori ini, supaya
-                // form tidak menawarkan Gram pada kategori yang dihitung per unit.
                 'satuan_opsi' => $this->satuanYangDipakai($k),
             ];
         })]);
@@ -253,7 +230,6 @@ class SetoranController extends Controller
                 $jenis = str_replace('_', ' ', $r->jenis);
                 $jenis = ucwords($jenis);
 
-                // Selalu baca status langsung dari tabel terkait agar sinkron otomatis
                 $status = $r->status;
                 $rincian = $r->rincian;
                 if ($r->jenis === 'setor_sampah' && $r->setoran_id) {
@@ -266,7 +242,6 @@ class SetoranController extends Controller
                         ->where('id', $r->penukaran_id ?? null)
                         ->first();
                     $status = $penukaran ? ($penukaran->diambil ? 'sudah_ditukar' : 'belum_ditukar') : 'belum_ditukar';
-                    // Tambahkan kode kupon ke rincian
                     if ($penukaran) {
                         $rincian = $r->rincian . ' (' . $penukaran->kode_kupon . ')';
                     }

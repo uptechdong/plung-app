@@ -16,15 +16,9 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            // Tab login yang dipilih pengguna (warga / pengurus). Wajib, supaya
-            //_tab_ tidak bisa diabaikan dan masuk lewat pintu yang salah.
             'role' => 'required|in:warga,pengurus',
         ]);
 
-        // Role ikut jadi bagian kunci pencarian. Kalau hanya username yang
-        // dicek, akun warga bisa masuk lewat tab Pengurus RT (dan sebaliknya).
-        // Pesan gagalnya sengaja sama dengan "kredensial salah" supaya tidak
-        // membocorkan bahwa username-nya ada tapi role-nya beda.
         $user = User::where('username', $credentials['username'])
             ->where('role', $credentials['role'])
             ->first();
@@ -36,7 +30,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Create API token
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
@@ -101,11 +94,6 @@ class AuthController extends Controller
                 }
                 $decoded = base64_decode($imageParts[1]);
 
-                // Jalur base64 ini sebelumnya tidak punya cek ukuran sama
-                // sekali, jadi foto 20 MB bisa tersimpan diam-diam lalu
-                // menggagalkan pemuatan gambar di kemudian hari. Base64
-                // menambah ukuran sekitar 33%, jadi batasnya dicek terhadap
-                // ukuran hasil decode, bukan panjang string base64.
                 if (strlen($decoded) > 3 * 1024 * 1024) {
                     return response()->json([
                         'success' => false,

@@ -47,16 +47,16 @@ class DashboardController extends Controller
                 $sampahB = (float) $b->total_sampah;
 
                 if ($sampahA !== $sampahB) {
-                    return $sampahB <=> $sampahA;   // sampah paling banyak di atas
+                    return $sampahB <=> $sampahA;
                 }
 
-                return $a->id <=> $b->id;            // pemecah seri: id, selalu stabil
+                return $a->id <=> $b->id;
             })
             ->take(3)
             ->values()
             ->map(fn ($u, $i) => [
-                'rank' => $i + 1,                                            // urutan 3 teratas
-                'peringkat' => $daftarPeringkat[$u->id] ?? ($i + 1),          // peringkat keseluruhan
+                'rank' => $i + 1,
+                'peringkat' => $daftarPeringkat[$u->id] ?? ($i + 1),
                 'id' => $u->id,
                 'nama' => $u->nama,
                 'rumah' => $u->rumah,
@@ -74,7 +74,6 @@ class DashboardController extends Controller
             ->where('status', 'diterima')
             ->sum('berat');
 
-        // Satu perhitungan peringkat dipakai untuk angka & tren supaya selalu sinkron.
         $daftarPeringkat = $this->peringkat->semuaPeringkat();
         $totalWarga = count($daftarPeringkat);
         $peringkat = $this->peringkat->peringkat($user, $daftarPeringkat);
@@ -113,8 +112,6 @@ class DashboardController extends Controller
             'riwayat_terakhir' => $riwayatTerakhir,
             'bulanan' => $bulanan,
             'proporsi' => $proporsi,
-            // Badge card Poin: hanya satu arah, mengikuti pergerakan terakhir.
-            // naik = setoran terverifikasi, turun = tukar hadiah.
             'trend_poin' => $trendPoin,
             'trend_sampah' => $trendSampah,
             'trend_peringkat' => $trendPeringkat,
@@ -130,26 +127,22 @@ class DashboardController extends Controller
         $bulanLalu = $now->copy()->subMonth()->month;
         $tahunLalu = $now->copy()->subMonth()->year;
 
-        // Total kontribusi user bulan ini
         $userBulanIni = (float) Setoran::where('user_id', $user->id)
             ->where('status', 'diterima')
             ->whereYear('tgl', $tahunIni)
             ->whereMonth('tgl', $bulanIni)
             ->sum('berat');
 
-        // Total kontribusi SEMUA warga bulan ini
         $totalBulanIni = (float) Setoran::where('status', 'diterima')
             ->whereYear('tgl', $tahunIni)
             ->whereMonth('tgl', $bulanIni)
             ->sum('berat');
 
-        // Total kontribusi SEMUA warga bulan lalu
         $totalBulanLalu = (float) Setoran::where('status', 'diterima')
             ->whereYear('tgl', $tahunLalu)
             ->whereMonth('tgl', $bulanLalu)
             ->sum('berat');
 
-        // Persentase kontribusi user terhadap total
         $persentaseBulanIni = $totalBulanIni > 0 ? round(($userBulanIni / $totalBulanIni) * 100, 1) : 0;
         $persentaseBulanLalu = $totalBulanLalu > 0 ? round((Setoran::where('user_id', $user->id)
             ->where('status', 'diterima')
@@ -212,7 +205,6 @@ class DashboardController extends Controller
             return $belumAda;
         }
 
-        // Kupon lama belum menyimpan poin-nya, ambil dari riwayat penukarannya.
         $poinTukar = $penukaran ? (int) $penukaran->poin : 0;
         if ($penukaran && $poinTukar <= 0) {
             $poinTukar = abs((int) RiwayatAktivitas::where('penukaran_id', $penukaran->id)->value('poin'));
@@ -221,7 +213,6 @@ class DashboardController extends Controller
         $waktuSetoran = $setoran?->updated_at;
         $waktuTukar = $penukaran?->created_at;
 
-        // Penukaran menang kalau waktunya paling baru (termasuk saat seri).
         if ($waktuTukar && (! $waktuSetoran || $waktuTukar >= $waktuSetoran)) {
             if ($poinTukar <= 0) {
                 return $belumAda;
@@ -382,7 +373,6 @@ class DashboardController extends Controller
         $bulanLalu = $now->copy()->subMonth()->month;
         $tahunLalu = $now->copy()->subMonth()->year;
 
-        // Total warga terdaftar sampai akhir bulan berjalan (kumulative)
         $wargaBulanIni = User::where('role', 'warga')
             ->where(function ($q) use ($tahunIni, $bulanIni) {
                 $q->whereYear('created_at', '<', $tahunIni)
@@ -393,7 +383,6 @@ class DashboardController extends Controller
             })
             ->count();
 
-        // Total warga terdaftar sampai akhir bulan lalu (kumulative)
         $wargaBulanLalu = User::where('role', 'warga')
             ->where(function ($q) use ($tahunLalu, $bulanLalu) {
                 $q->whereYear('created_at', '<', $tahunLalu)

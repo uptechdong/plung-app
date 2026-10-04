@@ -23,30 +23,21 @@ class KeamananHeader
     {
         $response = $next($request);
 
-        // Jangan bocorkan URL aplikasi ke situs lain.
         $response->headers->set('Referrer-Policy', 'no-referrer');
 
-        // Larang aplikasi dibuka di dalam iframe / frame lain.
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
-        // Batasi jenis MIME yang boleh dieksekusi browser.
         $response->headers->set('X-XSS-Protection', '0');
 
-        // 1. Aset build boleh di-cache lama karena namanya sudah ber-hash.
         if ($this->adalahAsetStatis($request)) {
             $response->headers->set('Cache-Control', 'public, max-age=31536000, immutable');
         }
-        // 2. Halaman HTML: jangan pernah disimpan di cache.
         elseif ($this->adalahHtml($request, $response)) {
             $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, private');
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
         }
-        // 3. Respons API WAJIB no-store. Kalau dibiarkan, browser bisa
-        //    menyajikan data lama (mis. daftar hadiah yang id-nya sudah
-        //    dihapus) sehingga UI menampilkan data yang tidak sinkron
-        //    dengan database.
         elseif ($request->is('api/*') || $request->expectsJson()) {
             $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, private');
             $response->headers->set('Pragma', 'no-cache');
@@ -69,8 +60,6 @@ class KeamananHeader
      */
     private function adalahHtml(Request $request, Response $response): bool
     {
-        // Jangan sentuh respons API: isinya JSON, bukan dokumen yang
-        // perlu di-cache browser.
         if ($request->is('api/*') || $request->expectsJson()) {
             return false;
         }

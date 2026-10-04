@@ -66,10 +66,10 @@ class PeringkatService
                 $sampahB = (float) $b->total_sampah;
 
                 if ($sampahA !== $sampahB) {
-                    return $sampahB <=> $sampahA;   // total sampah besar di atas
+                    return $sampahB <=> $sampahA;
                 }
 
-                return $a->id <=> $b->id;            // pemecah seri: id, selalu stabil
+                return $a->id <=> $b->id;
             })
             ->values();
 
@@ -78,8 +78,6 @@ class PeringkatService
 
         foreach ($warga as $w) {
             $posisi++;
-            // Belum pernah menyetorkan sampah terverifikasi => belum mulai,
-            // posisinya selalu di paling bawah.
             $peringkat[$w->id] = (float) $w->total_sampah > 0 ? $posisi : $totalWarga;
         }
 
@@ -129,7 +127,6 @@ class PeringkatService
         $totalSampah = $this->totalSampah($user);
         $sekarang = $this->peringkat($user, $daftar, $totalSampah);
 
-        // Kasus 1: belum ada setoran terverifikasi -> tren tetap.
         if ($totalSampah <= 0) {
             return [
                 'direction' => 'same',
@@ -141,7 +138,6 @@ class PeringkatService
 
         $terakhir = (int) ($user->peringkat_terakhir ?? 0);
 
-        // Kasus 3: snapshot tidak ada / tidak lagi valid -> tidak ada pembanding.
         if ($terakhir < 1 || $terakhir > $totalWarga) {
             return [
                 'direction' => 'same',
@@ -151,8 +147,6 @@ class PeringkatService
             ];
         }
 
-        // Kasus 2: bandingkan dengan snapshot sebelumnya. Nomor peringkat yang
-        // mengecil berarti peringkat membaik.
         $selisih = $terakhir - $sekarang;
 
         return [

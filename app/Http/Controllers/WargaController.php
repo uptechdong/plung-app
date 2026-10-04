@@ -110,10 +110,6 @@ class WargaController extends Controller
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus pengurus'], 403);
         }
 
-        // Menghapus warga berarti semua transaksinya dihapus oleh sistem:
-        // riwayat aktivitas, kupon penukaran, dan setoran sampah. Dihapus
-        // berurutan dari yang paling bergantung supaya tidak ada baris yatim,
-        // walau aturan cascade di database berubah atau tidak diandalkan.
         $jumlah = [
             'riwayat' => RiwayatAktivitas::where('user_id', $user->id)->delete(),
             'penukaran' => Penukaran::where('user_id', $user->id)->delete(),
