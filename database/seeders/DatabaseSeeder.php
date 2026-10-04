@@ -144,13 +144,13 @@ class DatabaseSeeder extends Seeder
         Setoran::create([
             'user_id' => $siti->id,
             'kategori_id' => $b3->id,
-            'berat' => 200,
-            'satuan' => 'Gram',
+            'berat' => 8,
+            'satuan' => 'Unit',
             'tgl' => '2026-09-20',
             'catatan' => 'Baterai bekas remote dan jam.',
             'foto' => null,
             'status' => 'diterima',
-            'poin' => 25,
+            'poin' => 200,
         ]);
 
         Setoran::create([
