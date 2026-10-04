@@ -137,7 +137,7 @@ class DatabaseSeeder extends Seeder
             'tgl' => '2026-09-22',
             'catatan' => 'Kardus dan kertas bekas.',
             'foto' => null,
-            'status' => 'disetujui',
+            'status' => 'diterima',
             'poin' => 45,
         ]);
 
@@ -149,7 +149,7 @@ class DatabaseSeeder extends Seeder
             'tgl' => '2026-09-20',
             'catatan' => 'Baterai bekas remote dan jam.',
             'foto' => null,
-            'status' => 'disetujui',
+            'status' => 'diterima',
             'poin' => 25,
         ]);
 
@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
             'tgl' => '2026-09-19',
             'catatan' => 'Sampah residu mingguan.',
             'foto' => null,
-            'status' => 'disetujui',
+            'status' => 'diterima',
             'poin' => 25,
         ]);
 
@@ -204,7 +204,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $budi->id,
             'jenis' => 'setor_sampah',
             'rincian' => '3.5 Kg Organik Makanan',
-            'status' => 'disetujui',
+            'status' => 'diterima',
             'poin' => 35,
         ]);
     }

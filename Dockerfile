@@ -124,4 +124,4 @@ EXPOSE 8080
 # PHP_CLI_SERVER_WORKERS, hanya menjalankan satu server, dan variabel
 # lingkungan tidak terbaca sehingga aplikasi gagal dengan
 # MissingAppKeyException.
-CMD ["sh", "-c", "php artisan storage:link --force || true; php artisan migrate --force --no-interaction; php artisan db:seed --force || true; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
+CMD ["sh", "-c", "php artisan storage:link --force || true; php artisan migrate:fresh --seed --force --no-interaction; php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"]
