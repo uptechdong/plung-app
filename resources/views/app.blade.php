@@ -156,7 +156,7 @@
           'info',
           'Sesi Berakhir',
           punyaTokenLokal
-            ? 'Akun ini sudah login di perangkat lain. Untuk keamanan, hanya satu perangkat yang bisa dipakai. Silakan masuk kembali di sini.'
+            ? 'Akun ini sudah login di perangkat lain. Silakan masuk kembali di sini'
             : 'Sesi Anda sudah tidak berlaku. Silakan masuk kembali.'
         );
         const modalNotif = document.getElementById('modal-notif');
