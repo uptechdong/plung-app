@@ -551,9 +551,7 @@ function formatUkuran(byte) {
       const previewImg = document.getElementById('ep-preview-foto');
       const previewIcon = document.getElementById('ep-preview-icon');
       const infoEl = document.getElementById('ep-foto-info');
-      const nameEl = document.getElementById('ep-foto-nama');
 
-      if (nameEl) nameEl.innerText = file.name;
       previewImg.src = URL.createObjectURL(file);
       previewImg.classList.remove('hidden');
       previewIcon.classList.add('hidden');
@@ -1134,12 +1132,9 @@ function formatUkuran(byte) {
       const previewIcon = document.getElementById('ep-preview-icon');
       const inputFoto = document.getElementById('ep-upload-foto');
       const infoFoto = document.getElementById('ep-foto-info');
-      const namaFoto = document.getElementById('ep-foto-nama');
 
-      // Bersihkan sisa pilihan berkas dari kunjungan sebelumnya, supaya
-      // nama file lama tidak ikut tampil saat menu dibuka lagi.
+      // Bersihkan sisa pilihan berkas dari kunjungan sebelumnya.
       if (inputFoto) inputFoto.value = '';
-      if (namaFoto) namaFoto.innerText = 'Belum ada berkas dipilih';
       if (infoFoto) infoFoto.innerText = 'Pilih berkas gambar JPG/PNG';
       uploadedFotoProses = null;
 

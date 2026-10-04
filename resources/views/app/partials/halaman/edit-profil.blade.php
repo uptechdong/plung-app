@@ -15,13 +15,10 @@
                   <div class="min-w-0 space-y-1.5">
                     <label class="block text-slate-700 dark:text-emerald-200 font-bold">Foto Profil</label>
                     <input type="file" id="ep-upload-foto" accept="image/*" class="hidden" onchange="previewUploadedFoto(event)">
-                    <div class="flex items-center gap-2">
-                      <button type="button" onclick="document.getElementById('ep-upload-foto').click()" class="inline-flex items-center gap-1.5 shrink-0 rounded-xl bg-brand-600 dark:bg-brand-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-700 active:scale-95 transition-transform">
-                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                        Pilih Foto
-                      </button>
-                      <span id="ep-foto-nama" class="min-w-0 flex-1 text-[11px] text-slate-400 dark:text-emerald-400 truncate">Belum ada berkas dipilih</span>
-                    </div>
+                    <button type="button" onclick="document.getElementById('ep-upload-foto').click()" class="inline-flex items-center gap-1.5 shrink-0 rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-700 active:scale-95 transition-transform">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      Pilih Foto
+                    </button>
                     <p id="ep-foto-info" class="text-[10px] text-slate-400 dark:text-emerald-400">Pilih berkas gambar JPG/PNG</p>
                   </div>
                 </div>
