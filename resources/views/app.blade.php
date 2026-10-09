@@ -10,7 +10,7 @@
     <div class="flex-1 flex flex-col lg:flex-row">
       <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden" onclick="tutupSidebar()" aria-hidden="true"></div>
 
-      <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] -translate-x-full lg:static lg:translate-x-0 lg:z-auto lg:w-64 lg:max-w-none bg-white dark:bg-darkcard border-r border-slate-200/70 dark:border-emerald-900/60 p-5 flex flex-col justify-between shrink-0 overflow-y-auto transition-transform duration-300 ease-out">
+      <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] -translate-x-full lg:static lg:translate-x-0 lg:z-auto lg:w-72 lg:max-w-none bg-white dark:bg-darkcard border-r border-slate-200/70 dark:border-emerald-900/60 p-5 flex flex-col justify-between shrink-0 overflow-y-auto transition-transform duration-300 ease-out">
         <div class="space-y-6">
           
           <div class="flex items-center gap-3 px-2">
@@ -888,15 +888,24 @@ function formatUkuran(byte) {
         loadRewards();
       }
 
+      // Tiap pindah halaman semua tombol sidebar dikembalikan ke class dasar
+      // (tidak aktif), lalu tombol halaman yang aktif diberi class aktif.
+      //
+      // Class dasar diambil dari markup partial sidebar lewat data-base-class,
+      // bukan ditulis ulang di sini. Kalau class baru ditambah di partial
+      // (mis. whitespace-nowrap, justify-between untuk tombol ber-badge),
+      // class itu otomatis ikut terpakai tanpa harus disalin ke sini --
+      // sebelumnya tombol ber-badge kehilangan justify-between begitu saja
+      // setelah pindah halaman, sehingga badge menempel di sebelah teksnya.
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (!btn.classList.contains('cursor-not-allowed')) {
-          btn.className = 'nav-btn smooth-zoom w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all active-press text-slate-600 dark:text-emerald-200 hover:bg-slate-100 dark:hover:bg-brand-950 font-bold';
-        }
+        if (btn.classList.contains('cursor-not-allowed')) return;
+        if (!btn.dataset.baseClass) btn.dataset.baseClass = btn.className;
+        btn.className = btn.dataset.baseClass;
       });
 
       const activeNav = document.getElementById('nav-' + pageId);
       if (activeNav && !activeNav.classList.contains('cursor-not-allowed')) {
-        activeNav.className = 'nav-btn smooth-zoom w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all active-press bg-brand-600 text-white font-extrabold shadow-sm';
+        activeNav.className = 'nav-btn smooth-zoom w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all active-press whitespace-nowrap bg-brand-600 text-white font-extrabold shadow-sm';
       }
     }
 
