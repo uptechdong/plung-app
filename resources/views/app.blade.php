@@ -888,24 +888,24 @@ function formatUkuran(byte) {
         loadRewards();
       }
 
-      // Tiap pindah halaman semua tombol sidebar dikembalikan ke class dasar
-      // (tidak aktif), lalu tombol halaman yang aktif diberi class aktif.
+      // Status aktif sidebar cukup dengan satu class .nav-active, yang stylenya
+      // ada di resources/css/app.css. Class lain tiap tombol (justify-between,
+      // gap, warna non-aktif) tidak pernah ditulis ulang di sini.
       //
-      // Class dasar diambil dari markup partial sidebar lewat data-base-class,
-      // bukan ditulis ulang di sini. Kalau class baru ditambah di partial
-      // (mis. whitespace-nowrap, justify-between untuk tombol ber-badge),
-      // class itu otomatis ikut terpakai tanpa harus disalin ke sini --
-      // sebelumnya tombol ber-badge kehilangan justify-between begitu saja
-      // setelah pindah halaman, sehingga badge menempel di sebelah teksnya.
+      // Sebelumnya className tombol ditulis ulang penuh setiap pindah halaman.
+      // Akibatnya justify-between pada tombol ber-badge hilang (badge menempel
+      // di sebelah teks) dan justify-between ikut nyasar ke tombol tanpa badge
+      // sehingga teksnya terlempar ke kanan. Class yang disalin manual juga
+      // gampang ketinggalan dari perubahan di partial sidebar.
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (btn.classList.contains('cursor-not-allowed')) return;
-        if (!btn.dataset.baseClass) btn.dataset.baseClass = btn.className;
-        btn.className = btn.dataset.baseClass;
+        if (!btn.classList.contains('cursor-not-allowed')) {
+          btn.classList.remove('nav-active');
+        }
       });
 
       const activeNav = document.getElementById('nav-' + pageId);
       if (activeNav && !activeNav.classList.contains('cursor-not-allowed')) {
-        activeNav.className = 'nav-btn smooth-zoom w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all active-press whitespace-nowrap bg-brand-600 text-white font-extrabold shadow-sm';
+        activeNav.classList.add('nav-active');
       }
     }
 

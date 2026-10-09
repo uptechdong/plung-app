@@ -66,3 +66,31 @@
 .smooth-zoom:hover {
     transform: scale(1.02);
 }
+
+/* ------------------------------------------------------------------
+   TOMBOL MENU SIDEBAR
+
+   Gaya tombol sidebar disimpan di sini, bukan ditulis ulang lewat
+   className di navigate(). navigate() sekarang hanya men-toggle
+   .nav-active; semua utility lain (justify-between, gap, warna teks
+   non-aktif) tetap seperti ada di partial sidebar dan tidak pernah
+   ditimpa.
+
+   Kenapa tidak pakai @layer: rules ini sengaja tidak berlapis supaya
+   menang atas utility Tailwind, termasuk utility dark: yang ditulis di
+   partial. Kalau .nav-active ikut dilapiskan, dark:text-emerald-200 di
+   partial bisa mendominasi dan tombol aktif jadi hijau muda di dark mode.
+
+   Kenapa white-space: nowrap ditulis di sini dan bukan cuma di partial:
+   partial adalah markup yang className-nya bisa ditulis ulang JavaScript,
+   sedangkan selector di bawah tidak bisa ditimpa className. Jadi nama menu
+   yang panjang tetap dijamin satu baris.
+   ------------------------------------------------------------------ */
+#nav-group-warga .nav-btn,
+#nav-group-pengurus .nav-btn {
+    white-space: nowrap;
+}
+
+.nav-btn.nav-active {
+    @apply bg-brand-600 text-white font-extrabold shadow-sm;
+}
