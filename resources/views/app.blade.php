@@ -2219,7 +2219,7 @@ function formatUkuran(byte) {
         return;
       }
 
-      const url = '/laporan/cetak?bulan=' + encodeURIComponent(bulan) + '&format=pdf';
+      const url = '/laporan/cetak?bulan=' + encodeURIComponent(bulan);
       window.open(url, '_blank');
     }
 

@@ -28,10 +28,15 @@ class LaporanController extends Controller
         return response()->json(['success' => true, 'data' => $bulan]);
     }
 
+    /**
+     * Susun laporan rekapitulasi lalu kirim sebagai PDF.
+     *
+     * Format keluaran hanya PDF. @param bulan "YYYY-MM" untuk satu bulan,
+     * atau "all" untuk seluruh periode.
+     */
     public function export(Request $request)
     {
         $bulanParam = $request->query('bulan', now()->format('Y-m'));
-        $format = strtolower($request->query('format', 'excel'));
 
         $query = Setoran::with(['user', 'kategori']);
 
@@ -72,11 +77,7 @@ class LaporanController extends Controller
             $kategoriSummary[$katName]['jumlah_transaksi'] += 1;
         }
 
-        if ($format === 'pdf') {
-            return $this->exportPdf($periodeText, $setorans, $kategoriSummary, $totalBerat, $totalPoin);
-        }
-
-        return $this->exportCsv($periodeText, $setorans, $kategoriSummary, $totalBerat, $totalPoin);
+        return $this->exportPdf($periodeText, $setorans, $kategoriSummary, $totalBerat, $totalPoin);
     }
 
     private function exportPdf(string $periodeText, $setorans, array $kategoriSummary, float $totalBerat, int $totalPoin): StreamedResponse
@@ -105,76 +106,6 @@ class LaporanController extends Controller
 
         return response()->stream(function () use ($dompdf) {
             echo $dompdf->output();
-        }, 200, $headers);
-    }
-
-    private function exportCsv(string $periodeText, $setorans, array $kategoriSummary, float $totalBerat, int $totalPoin): StreamedResponse
-    {
-        $filename = 'Rekap_Setoran_Sampah_PLUNG_' . str_replace(' ', '_', $periodeText) . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0',
-        ];
-
-        return response()->stream(function () use ($periodeText, $setorans, $kategoriSummary, $totalBerat, $totalPoin) {
-            $handle = fopen('php://output', 'w');
-
-            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            fputcsv($handle, ['REKAPITULASI PENGELOLAAN SAMPAH MANDIRI - PLUNG!']);
-            fputcsv($handle, ['WILAYAH RT 36 / RW 09']);
-            fputcsv($handle, ['Periode:', $periodeText]);
-            fputcsv($handle, ['Tanggal Cetak:', Carbon::now()->locale('id')->translatedFormat('d F Y, H:i') . ' WIB']);
-            fputcsv($handle, []);
-
-            fputcsv($handle, ['--- RINGKASAN PER KATEGORI SAMPAH ---']);
-            fputcsv($handle, ['No', 'Kategori Sampah', 'Jumlah Transaksi', 'Total Berat (Kg)', 'Total Poin']);
-            $noKat = 1;
-            foreach ($kategoriSummary as $kat) {
-                fputcsv($handle, [
-                    $noKat++,
-                    $kat['nama'],
-                    $kat['jumlah_transaksi'],
-                    number_format($kat['total_berat_kg'], 2, ',', '.'),
-                    $kat['total_poin'],
-                ]);
-            }
-            fputcsv($handle, [
-                'TOTAL',
-                '',
-                $setorans->count(),
-                number_format($totalBerat, 2, ',', '.'),
-                $totalPoin,
-            ]);
-            fputcsv($handle, []);
-
-            fputcsv($handle, ['--- RINCIAN TRANSAKSI SETORAN WARGA ---']);
-            fputcsv($handle, ['No', 'Tanggal', 'Nama Warga', 'No. Rumah / Blok', 'Kategori Sampah', 'Berat / Jumlah', 'Poin', 'Status', 'Catatan']);
-
-            $no = 1;
-            foreach ($setorans as $s) {
-                $cleanBerat = ((float) $s->berat == (int) $s->berat ? (int) $s->berat : (float) $s->berat);
-                fputcsv($handle, [
-                    $no++,
-                    $s->tgl ? $s->tgl->locale('id')->translatedFormat('d/m/Y') : '-',
-                    $s->user ? $s->user->nama : '-',
-                    $s->user ? $s->user->rumah : '-',
-                    $s->kategori ? $s->kategori->nama : '-',
-                    $cleanBerat . ' ' . $s->satuan,
-                    $s->poin,
-                    ucfirst($s->status),
-                    $s->catatan ?? '-',
-                ]);
-            }
-
-            fputcsv($handle, []);
-            fputcsv($handle, ['Dicetak otomatis oleh Sistem Aplikasi PLUNG!']);
-
-            fclose($handle);
         }, 200, $headers);
     }
 }
