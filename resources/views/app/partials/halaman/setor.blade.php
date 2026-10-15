@@ -26,7 +26,6 @@
 
                 <div>
                   <label class="block mb-1.5 text-slate-700 dark:text-emerald-200">Perkiraan Poin</label>
-                  {{-- Kolom ini hanya menampilkan, tidak bisa diketik warga. --}}
                   <input type="text" id="setor-poin" readonly value="0" class="w-full p-3 rounded-xl bg-slate-100 dark:bg-brand-950/60 border border-slate-200 dark:border-emerald-800/80 text-slate-500 dark:text-emerald-200 font-extrabold focus:outline-none cursor-not-allowed">
                   
                 </div>

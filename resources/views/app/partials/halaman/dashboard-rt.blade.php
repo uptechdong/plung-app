@@ -73,11 +73,6 @@
                   <button onclick="navigate('verifikasi')" class="text-xs text-brand-600 dark:text-brand-300 font-extrabold hover:underline">Kelola Verifikasi</button>
                 </div>
 
-                {{-- Di bawah 768px tabel 5 kolom tidak muat dan hanya bisa dibaca
-                     lewat geser horizontal yang sering tidak diketahui
-                     pengguna. Jadi di HP data dirender sebagai kartu (lihat
-                     JS loadDashboardRT), tabel baru muncul di tablet/desktop.
-                     Sama seperti dashboard warga. --}}
                 <div id="cards-dash-rt" class="md:hidden space-y-3"></div>
 
                 <div class="hidden md:block overflow-x-auto">

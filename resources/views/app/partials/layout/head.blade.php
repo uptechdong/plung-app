@@ -3,26 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {{-- Halaman aplikasi tidak boleh di-cache: data warga & sesi login harus selalu segar. --}}
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>PLUNG! - Sistem Pemilahan Sampah Mandiri</title>
 
-  {{-- ===================================================================
-       SAMAKAN ALAMAT AKSES APLIKASI
-       -------------------------------------------------------------------
-       Browser menganggap http://localhost:8000 dan http://127.0.0.1:8000
-       sebagai DUA origin yang berbeda. Semua yang disimpan di localStorage
-       (termasuk token login "plung_token") tidak ikut antar origin, jadi
-       membuka aplikasi lewat alamat berbeda bisa membuat: sudah login di
-       satu alamat tapi dianggap belum login di alamat lain, dan data yang
-       tampil jadi berbeda-beda.
-
-       Karena itu semua akses lokal diarahkan ke SATU alamat. Setelah ini
-       hasilnya selalu sama, apa pun alamat yang diketik di browser.
-       (perlu satu kali login ulang saat pertama memakai alamat baru)
-  ==================================================================== --}}
   <script>
     (function () {
       var HOST_KANONIK = 'localhost';
@@ -59,14 +44,6 @@
        layar putih kosong sampai CDN selesai. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  {{-- Poppins untuk seluruh aplikasi, termasuk logo "PLUNG!" di sidebar dan
-       di layar login.
-       Weight 400-700. Poppins secara bawaan terasa lebih tebal daripada font
-       sans biasa, jadi teks dasar dibiarkan di 400 (tipis), dan hanya teks
-       yang memang butuh penekanan yang naik ke 600 atau 700.
-       Karena logo "PLUNG!" memakai font-black, ia otomatis menjadi bagian
-       paling tebal di layar (700), sementara teks lain lebih ringan.
-       Plus Jakarta Sans tidak dimuat karena tidak ada elemen yang memakainya. --}}
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
   <script src="https://unpkg.com/lucide@latest" defer></script>

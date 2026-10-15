@@ -6,14 +6,8 @@
                 
               </div>
 
-              {{-- Di bawah 768px tabel 6 kolom tidak muat, dan tombol "Konfirmasi
-                   Ambil" yang cukup lebar membuat tabel meluap. Jadi di HP
-                   data dirender sebagai kartu (lihat JS renderKuponPengurus),
-                   tabel baru muncul di tablet/desktop. --}}
               <div id="cards-verifikasi-kupon" class="md:hidden space-y-3"></div>
 
-              {{-- md:min-w-[40rem] (640px) di bawah area konten terkecil saat
-                   tabel tampil (704px), jadi tidak pernah memunculkan gulir. --}}
               <div class="hidden md:block overflow-x-auto">
                 <table class="w-full md:min-w-[40rem] text-center text-xs whitespace-nowrap">
                   <thead>

@@ -1,10 +1,5 @@
-          {{-- justify-between itu penting: tanpa itu, kotak tanggal/tema/profil
-               langsung menempel di sebelah kotak pencarian, dan sisa ruang
-               menganggur di kanan. --}}
           <div class="flex items-center justify-between gap-2 sm:gap-4 py-3 border-b border-slate-200/60 dark:border-emerald-900/60">
 
-            {{-- Tombol titik tiga: hanya muncul di layar kecil, untuk membuka
-                 drawer menu. Di layar lebar sidebar sudah terlihat permanen. --}}
             <button type="button" id="sidebar-toggle" onclick="toggleSidebar()"
                     class="lg:hidden shrink-0 p-2 -ml-1 rounded-xl text-slate-600 dark:text-emerald-200 hover:bg-slate-100 dark:hover:bg-brand-950 active-press transition-colors"
                     aria-label="Buka menu" aria-expanded="false" aria-controls="sidebar">
@@ -18,8 +13,6 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-              {{-- Tanggal panjangnya boros ruang di layar 360px, jadi
-                   disembunyikan sampai layar sedang (sm ke atas). --}}
               <span id="current-date-text" class="hidden sm:inline text-xs font-bold text-slate-600 dark:text-emerald-200/90 pr-3 sm:pr-4 border-r border-slate-200 dark:border-emerald-800/80">-</span>
 
               <button onclick="toggleDarkMode()" title="Ganti Mode Gelap/Terang" aria-label="Ganti mode gelap/terang" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-emerald-200 transition-colors">
@@ -33,8 +26,6 @@
                     <img id="user-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
                     <i id="user-avatar-default-icon" data-lucide="user" class="w-5 h-5"></i>
                   </div>
-                  {{-- Nama & chevron disembunyikan di layar kecil supaya baris
-                       atas tidak berdesakan; avatar sudah cukup penanda. --}}
                   <span id="user-display-name" class="hidden sm:inline max-w-[9rem] truncate">-</span>
                   <i data-lucide="chevron-down" class="hidden sm:block w-4 h-4 text-slate-400"></i>
                 </button>

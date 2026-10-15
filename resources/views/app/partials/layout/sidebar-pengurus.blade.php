@@ -1,11 +1,4 @@
           <!-- PANEL PENGURUS RT -->
-          {{-- Tombol ber-badge memakai justify-between supaya badge terdorong
-               ke kanan, dan labelnya memakai min-w-0 + truncate supaya teks
-               memotong dengan elipsis, bukan turun ke baris kedua.
-               Style aktifnya (background hijau + teks putih) memakai class
-               .nav-active yang didefinisikan di resources/css/app.css, bukan
-               ditulis ulang di navigate(). white-space: nowrap dijamin juga
-               dari CSS itu karena className di sini bisa ditulis ulang JS. --}}
           <nav id="nav-group-pengurus" class="space-y-1.5 font-bold text-[13px] hidden">
             <p class="px-3 py-2 text-[11px] text-slate-400 dark:text-emerald-400 uppercase tracking-widest font-extrabold">Panel Pengurus RT</p>
             

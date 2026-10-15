@@ -97,17 +97,8 @@
                 <button onclick="navigate('riwayat')" class="text-xs text-brand-600 dark:text-brand-300 font-extrabold hover:underline">Lihat Semua</button>
               </div>
 
-              {{-- Di bawah 768px tabel 5 kolom tidak muat (~350px setelah
-                   padding) dan hanya bisa dibaca lewat geser horizontal yang
-                   sering tidak diketahui pengguna. Jadi di HP data dirender
-                   sebagai kartu (lihat JS loadDashboardWarga), dan tabel
-                   baru muncul di tablet/desktop. --}}
               <div id="cards-dash-warga" class="md:hidden space-y-3"></div>
 
-              {{-- md:min-w-[40rem] (640px) dipakai sebagai lantai agar kolom
-                   tidak tergencet, tapi nilainya di bawah area konten
-                   terkecil saat tabel tampil (704px), jadi tidak pernah
-                   memunculkan gulir horizontal. --}}
               <div class="hidden md:block overflow-x-auto">
                 <table class="w-full md:min-w-[40rem] text-center text-xs whitespace-nowrap">
                   <thead>

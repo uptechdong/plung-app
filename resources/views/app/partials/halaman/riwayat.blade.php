@@ -9,15 +9,8 @@
                 <span id="badge-total-aktivitas" class="shrink-0 px-3 py-1 bg-emerald-50 dark:bg-brand-950 text-brand-600 dark:text-brand-300 font-extrabold text-xs rounded-xl border border-slate-200 dark:border-emerald-800/80">0 Aktivitas</span>
               </div>
 
-              {{-- Di bawah 768px tabel 5 kolom tidak muat: setiap kolom cuma
-                   dapat ~68px sehingga judul kolom saling bertumpuk. Karena itu
-                   di HP data dirender sebagai kartu (lihat JS loadRiwayat), dan
-                   tabel baru muncul di tablet/desktop. --}}
               <div id="cards-riwayat" class="md:hidden space-y-3"></div>
 
-              {{-- min-w mengikuti kolom "Rincian" yang isinya paling panjang.
-                   Cukup di tablet (>=768px) agar tabel tidak tergencet, dan
-                   tidak perlu di HP karena tabelnya disembunyikan di sana. --}}
               <div class="hidden md:block overflow-x-auto">
                 <table class="w-full md:min-w-[42rem] text-left text-xs">
                   <thead>

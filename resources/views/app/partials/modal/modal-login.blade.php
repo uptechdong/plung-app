@@ -1,7 +1,4 @@
   <!-- ================= 1. MODAL LOGIN ================= -->
-  {{-- Default-nya disembunyikan. Tampilannya dikendalikan JS lewat
-       tampilkanLogin(), supaya halaman ini tidak berkedip di frame pertama
-       setiap kali refresh. --}}
   <div id="auth-screen" class="hidden fixed inset-0 bg-brand-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div id="login-card" class="bg-white dark:bg-darkcard rounded-3xl border border-slate-200/80 dark:border-emerald-800/80 p-8 w-full max-w-md space-y-6 shadow-2xl animate-modal-pop transition-all">
       

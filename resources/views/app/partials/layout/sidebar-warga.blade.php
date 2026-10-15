@@ -1,8 +1,4 @@
           <!-- PANEL WARGA -->
-          {{-- Sama seperti sidebar pengurus: nama menu panjang tetap satu baris
-               (white-space: nowrap dijamin dari resources/css/app.css), dan
-               style tombol aktif memakai class .nav-active yang juga
-               didefinisikan di file itu, bukan ditulis ulang di navigate(). --}}
           <nav id="nav-group-warga" class="space-y-1.5 font-bold text-[13px]">
             <p class="px-3 py-2 text-[11px] text-slate-400 dark:text-emerald-400 uppercase tracking-widest font-extrabold">Panel Warga</p>
             
