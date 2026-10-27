@@ -22,4 +22,14 @@ class RiwayatAktivitas extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function setoran()
+    {
+        return $this->belongsTo(Setoran::class);
+    }
+
+    public function penukaran()
+    {
+        return $this->belongsTo(Penukaran::class);
+    }
 }

@@ -116,6 +116,8 @@
     let verifikasiFetchSeq = 0;
     let listKuponVerifikasi = [];
     let listKategoriSampah = [];
+    let riwayatLoaded = false;
+    let riwayatFetchSeq = 0;
 
     async function apiFetch(url, options = {}) {
       const headers = {
@@ -150,6 +152,11 @@
         const punyaTokenLokal = !!authToken;
         localStorage.removeItem('plung_token');
         authToken = null;
+        // Sesi berakhir: cache riwayat tidak berlaku lagi untuk sesi baru,
+        // dan isi DOM-nya dikosongkan (skeleton) agar data akun lama tidak
+        // tersisa sampai akun berikutnya memuat ulang.
+        riwayatLoaded = false;
+        renderRiwayatSkeleton();
         tampilkanLogin();
 
         showModernModal(
@@ -423,9 +430,34 @@
     }
 
     function filterDualView(tbodyId, cardSelector, cardWrapId, msgId, keyword, emptyText) {
-      const rows = document.querySelectorAll('#' + tbodyId + ' tr:not(.no-search-results-row):not(.empty-state-row)');
+      // `.skeleton-row` / `.riwayat-skeleton` dilewati: tampilan placeholder
+      // bukan data sungguhan sehingga tidak ikut difilter maupun dihitung.
+      const rows = document.querySelectorAll('#' + tbodyId + ' tr:not(.no-search-results-row):not(.empty-state-row):not(.skeleton-row)');
       const cards = document.querySelectorAll(cardSelector);
       let visible = 0;
+
+      // Kata kunci kosong (bukan pencarian): tampilkan semua baris/kartu
+      // apa adanya dan bersihkan sisa pesan pencarian sebelumnya. Tanpa
+      // cabang ini, akun tanpa data ikut memunculkan "Data tidak ditemukan
+      // sesuai kata kunci """ yang membingungkan.
+      if (!keyword) {
+        rows.forEach(row => { row.style.display = ''; });
+        cards.forEach(card => { card.style.display = ''; });
+        document.querySelectorAll('#' + tbodyId + ' .no-search-results-row').forEach(el => el.remove());
+        const msgKosong = document.getElementById(msgId);
+        if (msgKosong) msgKosong.remove();
+        return;
+      }
+
+      // Selagi skeleton tampil (data belum dimuat), kosongkan pesan lama
+      // tanpa menampilkan pesan "tidak ditemukan" -- memang belum ada data.
+      const tbodyNow = document.getElementById(tbodyId);
+      const masihSkeleton = tbodyNow && tbodyNow.querySelector('.skeleton-row') && rows.length === 0;
+      if (masihSkeleton) {
+        const msgSkeleton = document.getElementById(msgId);
+        if (msgSkeleton) msgSkeleton.remove();
+        return;
+      }
 
       rows.forEach(row => {
         const show = row.innerText.toLowerCase().includes(keyword);
@@ -765,6 +797,11 @@ function formatUkuran(byte) {
         document.getElementById('warga-greeting-text').innerText = greeting + ', ' + currentUserSession.nama;
 
         navigate('dashboard-warga');
+
+        // Pra-muat riwayat di latar belakang saat login, supaya saat user
+        // mengklik menu "Riwayat Aktivitas" datanya sudah ada di DOM dan
+        // langsung tampil tanpa jeda menunggu server.
+        loadRiwayat();
       }
 
       updatePoinDisplay();
@@ -818,7 +855,8 @@ function formatUkuran(byte) {
     }
 
     function updateRiwayatCount() {
-      const rows = document.querySelectorAll('#tbl-riwayat-body tr:not(.no-search-results-row):not(.empty-state-row)').length;
+      // Baris skeleton (`.skeleton-row`) tidak dihitung sebagai aktivitas.
+      const rows = document.querySelectorAll('#tbl-riwayat-body tr:not(.no-search-results-row):not(.empty-state-row):not(.skeleton-row)').length;
       document.getElementById('badge-total-aktivitas').innerText = rows + ' Aktivitas';
     }
 
@@ -831,6 +869,11 @@ function formatUkuran(byte) {
         localStorage.removeItem('plung_token');
         authToken = null;
         currentUserSession = null;
+        // Cache riwayat milik akun sebelumnya tidak boleh terpakai akun
+        // berikutnya yang login di perangkat yang sama; isi DOM-nya juga
+        // dibersihkan (skeleton) supaya tidak ada sisa data akun lama.
+        riwayatLoaded = false;
+        renderRiwayatSkeleton();
         tampilkanLogin();
         document.getElementById('login-username').value = '';
         document.getElementById('login-password').value = '';
@@ -1125,9 +1168,64 @@ function formatUkuran(byte) {
       return '<span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-extrabold text-[10px] rounded-full border border-transparent dark:border-slate-800">' + (s || '-') + '</span>';
     }
 
-    async function loadRiwayat() {
+    // Tampilan placeholder (skeleton) untuk halaman riwayat. Dipakai saat
+    // data belum ada di DOM: saat pertama dibuka maupun saat muat ulang
+    // setelah riwayat kedaluwarsa (setor/tukar/logout), supaya user selalu
+    // mendapat umpan balik "sedang memuat".
+    function renderRiwayatSkeleton() {
+      const bar = (w, extra) => '<div class="h-3 ' + w + ' rounded bg-slate-200/80 dark:bg-emerald-900/60 animate-pulse' + (extra || '') + '"></div>';
+      const badgeBar = '<div class="h-5 w-20 rounded-full bg-slate-200/80 dark:bg-emerald-900/60 animate-pulse"></div>';
+
+      const tbody = document.getElementById('tbl-riwayat-body');
+      if (tbody) {
+        tbody.innerHTML = Array.from({ length: 4 }).map(() =>
+          '<tr class="skeleton-row">' +
+            '<td class="py-3.5">' + bar('w-20') + '</td>' +
+            '<td class="py-3.5">' + bar('w-24') + '</td>' +
+            '<td class="py-3.5">' + bar('w-32') + '</td>' +
+            '<td class="py-3.5">' + badgeBar + '</td>' +
+            '<td class="py-3.5">' + bar('w-12', ' ml-auto') + '</td>' +
+          '</tr>'
+        ).join('');
+      }
+
+      const cards = document.getElementById('cards-riwayat');
+      if (cards) {
+        cards.innerHTML = Array.from({ length: 2 }).map(() =>
+          '<div class="riwayat-skeleton rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-4 space-y-2.5">' +
+            '<div class="flex items-start justify-between gap-3">' +
+              '<div class="min-w-0 space-y-1.5 flex-1">' + bar('w-20') + bar('w-28') + '</div>' +
+              bar('w-12') +
+            '</div>' +
+            bar('w-full') +
+            '<div>' + badgeBar + '</div>' +
+          '</div>'
+        ).join('');
+      }
+
+      const badge = document.getElementById('badge-total-aktivitas');
+      if (badge) badge.innerText = '0 Aktivitas';
+    }
+
+    async function loadRiwayat(force = false) {
+      // Riwayat yang sudah pernah dimuat tidak diambil ulang setiap kali menu
+      // diklik -- kontennya masih tersimpan di DOM. Pemaksaan pembaruan
+      // (`force = true`) dipakai setelah aksi yang menambah riwayat baru
+      // (setor sampah / tukar poin).
+      if (riwayatLoaded && !force) return;
+
+      const seq = ++riwayatFetchSeq;
+
+      // Tampilkan skeleton selagi menunggu respons server.
+      renderRiwayatSkeleton();
+
       try {
         const res = await apiFetch('/riwayat');
+
+        // Respons lama boleh diabaikan kalau ada permintaan lebih baru
+        // (mis. user klik menu saat permintaan sebelumnya masih berjalan).
+        if (seq !== riwayatFetchSeq) return;
+
         const tbody = document.getElementById('tbl-riwayat-body');
         const cards = document.getElementById('cards-riwayat');
         const rows = (res.data && res.data.length > 0) ? res.data : [];
@@ -1165,9 +1263,25 @@ function formatUkuran(byte) {
             : '<div class="rounded-2xl border border-dashed border-slate-200 dark:border-emerald-800/70 p-6 text-center text-xs font-medium text-slate-400 dark:text-emerald-400">Belum ada aktivitas warga</div>';
         }
 
+        riwayatLoaded = true;
         updateRiwayatCount();
       } catch (err) {
+        if (seq !== riwayatFetchSeq) return;
         console.warn('Gagal memuat riwayat:', err);
+
+        // Gagal dimuat: skeleton diganti pesan galat, dan `riwayatLoaded`
+        // tetap false supaya kunjungan berikutnya mencoba lagi.
+        const tbody = document.getElementById('tbl-riwayat-body');
+        const cards = document.getElementById('cards-riwayat');
+        const pesan = 'Gagal memuat riwayat. Coba lagi';
+        if (tbody) {
+          tbody.innerHTML = '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">' + pesan + '</td></tr>';
+        }
+        if (cards) {
+          cards.innerHTML = '<div class="rounded-2xl border border-dashed border-slate-200 dark:border-emerald-800/70 p-6 text-center text-xs font-medium text-slate-400 dark:text-emerald-400">' + pesan + '</div>';
+        }
+        const badge = document.getElementById('badge-total-aktivitas');
+        if (badge) badge.innerText = '0 Aktivitas';
       }
     }
 
@@ -1920,6 +2034,9 @@ function formatUkuran(byte) {
           if (res.success) {
             userPoin -= item.poin;
             item.stok -= 1;
+            // Muat ulang riwayat di latar belakang: data di DOM langsung
+            // segar sehingga menu "Riwayat Aktivitas" tetap instan diklik.
+            loadRiwayat(true);
             
             await loadInitialData();
             await loadKategoriSampah();
@@ -2256,6 +2373,9 @@ function formatUkuran(byte) {
         });
         
         if (res.success) {
+          // Muat ulang riwayat di latar belakang supaya menu "Riwayat
+          // Aktivitas" langsung menampilkan setoran baru tanpa jeda.
+          loadRiwayat(true);
           showModernModal('success', 'Terkirim', 'Laporan setoran berhasil dikirim', () => {
             document.getElementById('setor-kategori').value = '';
             document.getElementById('setor-berat').value = '';

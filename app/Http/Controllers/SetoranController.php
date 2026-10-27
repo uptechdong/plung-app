@@ -10,7 +10,6 @@ use App\Services\PeringkatService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -223,7 +222,12 @@ class SetoranController extends Controller
     {
         $user = Auth::user();
 
+        // Eager loading: satu query untuk riwayat + satu query untuk seluruh
+        // setoran + satu query untuk seluruh penukaran yang dirujuk.
+        // Sebelumnya tiap baris memicu query sendiri (N+1) sehingga halaman
+        // riwayat terasa jeda saat dibuka.
         $riwayat = $user->riwayatAktivitas()
+            ->with(['setoran:id,status', 'penukaran:id,kode_kupon,diambil'])
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($r) {
@@ -233,14 +237,11 @@ class SetoranController extends Controller
                 $status = $r->status;
                 $rincian = $r->rincian;
                 if ($r->jenis === 'setor_sampah' && $r->setoran_id) {
-                    $setoran = DB::table('setoran')->where('id', $r->setoran_id)->first();
-                    if ($setoran) {
-                        $status = $setoran->status;
+                    if ($r->setoran) {
+                        $status = $r->setoran->status;
                     }
                 } elseif ($r->jenis === 'penukaran_hadiah') {
-                    $penukaran = DB::table('penukaran')
-                        ->where('id', $r->penukaran_id ?? null)
-                        ->first();
+                    $penukaran = $r->penukaran;
                     $status = $penukaran ? ($penukaran->diambil ? 'sudah_ditukar' : 'belum_ditukar') : 'belum_ditukar';
                     if ($penukaran) {
                         $rincian = $r->rincian . ' (' . $penukaran->kode_kupon . ')';
