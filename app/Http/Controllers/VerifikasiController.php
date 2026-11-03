@@ -44,18 +44,21 @@ class VerifikasiController extends Controller
             'status' => 'required|in:diterima,ditolak',
         ]);
 
-        $totalBerubah = ($data['status'] === 'diterima') !== ($setoran->status === 'diterima');
+        $sebelumnyaDiterima = $setoran->status === 'diterima';
+        $baruDiterima = $data['status'] === 'diterima';
+
+        $totalBerubah = $baruDiterima !== $sebelumnyaDiterima;
         if ($totalBerubah) {
             $this->peringkat->snapshot();
         }
 
         $setoran->update(['status' => $data['status']]);
 
-        if ($data['status'] === 'diterima') {
-            $user = $setoran->user;
-            if ($user) {
-                $user->increment('poin', $setoran->poin);
-            }
+        $user = $setoran->user;
+        if ($user && $baruDiterima && ! $sebelumnyaDiterima) {
+            $user->increment('poin', $setoran->poin);
+        } elseif ($user && ! $baruDiterima && $sebelumnyaDiterima) {
+            $user->decrement('poin', $setoran->poin);
         }
 
         return response()->json(['success' => true]);

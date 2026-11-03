@@ -87,7 +87,6 @@ return [
             'endpoint' => env('FOTO_ENDPOINT'),
             'url' => env('FOTO_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
             'use_path_style_endpoint' => env('FOTO_PATH_STYLE', true),
-            // Driver s3 memakai `root` sebagai prefix key, jadi harus kosong.
             'root' => env('FOTO_DRIVER', 'local') === 's3' ? '' : storage_path('app/public'),
             'visibility' => 'public',
             'throw' => false,

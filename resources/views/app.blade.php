@@ -143,18 +143,9 @@
       }
 
       if (response.status === 401 && url !== '/login') {
-        // 401 di luar halaman login berarti token yang dipakai sudah tidak
-        // berlaku. Dua sebabnya: akun ini login di perangkat lain (token
-        // dicabut server), atau token sudah kedaluwarsa/kadaluarsa.
-        // Syarat authToken sengaja tidak ikut diperiksa: kalau localStorage
-        // sudah kosong, user tetap perlu tahu kenapa dia ditendang --
-        // tanpa itu dia hanya melihat halaman login tanpa penjelasan.
         const punyaTokenLokal = !!authToken;
         localStorage.removeItem('plung_token');
         authToken = null;
-        // Sesi berakhir: cache riwayat tidak berlaku lagi untuk sesi baru,
-        // dan isi DOM-nya dikosongkan (skeleton) agar data akun lama tidak
-        // tersisa sampai akun berikutnya memuat ulang.
         riwayatLoaded = false;
         renderRiwayatSkeleton();
         tampilkanLogin();
@@ -430,16 +421,10 @@
     }
 
     function filterDualView(tbodyId, cardSelector, cardWrapId, msgId, keyword, emptyText) {
-      // `.skeleton-row` / `.riwayat-skeleton` dilewati: tampilan placeholder
-      // bukan data sungguhan sehingga tidak ikut difilter maupun dihitung.
       const rows = document.querySelectorAll('#' + tbodyId + ' tr:not(.no-search-results-row):not(.empty-state-row):not(.skeleton-row)');
       const cards = document.querySelectorAll(cardSelector);
       let visible = 0;
 
-      // Kata kunci kosong (bukan pencarian): tampilkan semua baris/kartu
-      // apa adanya dan bersihkan sisa pesan pencarian sebelumnya. Tanpa
-      // cabang ini, akun tanpa data ikut memunculkan "Data tidak ditemukan
-      // sesuai kata kunci """ yang membingungkan.
       if (!keyword) {
         rows.forEach(row => { row.style.display = ''; });
         cards.forEach(card => { card.style.display = ''; });
@@ -449,8 +434,6 @@
         return;
       }
 
-      // Selagi skeleton tampil (data belum dimuat), kosongkan pesan lama
-      // tanpa menampilkan pesan "tidak ditemukan" -- memang belum ada data.
       const tbodyNow = document.getElementById(tbodyId);
       const masihSkeleton = tbodyNow && tbodyNow.querySelector('.skeleton-row') && rows.length === 0;
       if (masihSkeleton) {
@@ -602,7 +585,6 @@ function formatUkuran(byte) {
       const previewIcon = document.getElementById('ep-preview-icon');
       const hapusBtn = document.getElementById('ep-hapus-foto');
 
-      // Memilih berkas baru membatalkan penanda hapus yang sebelumnya aktif.
       fotoProfilDihapus = false;
       if (hapusBtn) hapusBtn.classList.remove('hidden');
 
@@ -798,9 +780,6 @@ function formatUkuran(byte) {
 
         navigate('dashboard-warga');
 
-        // Pra-muat riwayat di latar belakang saat login, supaya saat user
-        // mengklik menu "Riwayat Aktivitas" datanya sudah ada di DOM dan
-        // langsung tampil tanpa jeda menunggu server.
         loadRiwayat();
       }
 
@@ -855,7 +834,6 @@ function formatUkuran(byte) {
     }
 
     function updateRiwayatCount() {
-      // Baris skeleton (`.skeleton-row`) tidak dihitung sebagai aktivitas.
       const rows = document.querySelectorAll('#tbl-riwayat-body tr:not(.no-search-results-row):not(.empty-state-row):not(.skeleton-row)').length;
       document.getElementById('badge-total-aktivitas').innerText = rows + ' Aktivitas';
     }
@@ -869,9 +847,6 @@ function formatUkuran(byte) {
         localStorage.removeItem('plung_token');
         authToken = null;
         currentUserSession = null;
-        // Cache riwayat milik akun sebelumnya tidak boleh terpakai akun
-        // berikutnya yang login di perangkat yang sama; isi DOM-nya juga
-        // dibersihkan (skeleton) supaya tidak ada sisa data akun lama.
         riwayatLoaded = false;
         renderRiwayatSkeleton();
         tampilkanLogin();
@@ -931,15 +906,6 @@ function formatUkuran(byte) {
         loadRewards();
       }
 
-      // Status aktif sidebar cukup dengan satu class .nav-active, yang stylenya
-      // ada di resources/css/app.css. Class lain tiap tombol (justify-between,
-      // gap, warna non-aktif) tidak pernah ditulis ulang di sini.
-      //
-      // Sebelumnya className tombol ditulis ulang penuh setiap pindah halaman.
-      // Akibatnya justify-between pada tombol ber-badge hilang (badge menempel
-      // di sebelah teks) dan justify-between ikut nyasar ke tombol tanpa badge
-      // sehingga teksnya terlempar ke kanan. Class yang disalin manual juga
-      // gampang ketinggalan dari perubahan di partial sidebar.
       document.querySelectorAll('.nav-btn').forEach(btn => {
         if (!btn.classList.contains('cursor-not-allowed')) {
           btn.classList.remove('nav-active');
@@ -1065,7 +1031,7 @@ function formatUkuran(byte) {
                   '<td class="py-3 text-center font-extrabold text-slate-900 dark:text-white">' + r.kategori + '</td>' +
                   '<td class="py-3 text-center">' + r.berat + '</td>' +
                   '<td class="py-3 text-center">' + statusBadge(r.status) + '</td>' +
-                  '<td class="py-3 text-center font-extrabold ' + (r.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500') + '">' + (r.poin >= 0 ? '+' : '') + r.poin + ' pts</td>' +
+                  '<td class="py-3 text-center">' + poinBadge(r.poin) + '</td>' +
                 '</tr>'
               ).join('')
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada transaksi</td></tr>';
@@ -1074,14 +1040,13 @@ function formatUkuran(byte) {
         if (dashCards) {
           dashCards.innerHTML = riwayat.length > 0
             ? riwayat.map(r => {
-                const poinCls = r.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500';
                 return '<div class="dash-card rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-4 space-y-2.5">' +
                   '<div class="flex items-start justify-between gap-3">' +
                     '<div class="min-w-0">' +
                       '<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-emerald-400">' + r.tanggal + '</p>' +
                       '<p class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5 break-words">' + r.kategori + '</p>' +
                     '</div>' +
-                    '<span class="shrink-0 font-extrabold text-xs ' + poinCls + '">' + (r.poin >= 0 ? '+' : '') + r.poin + ' pts</span>' +
+                    poinBadge(r.poin, 'shrink-0 text-xs') +
                   '</div>' +
                   '<p class="text-xs text-slate-500 dark:text-emerald-300/80 leading-relaxed break-words">' + r.berat + '</p>' +
                   '<div>' + statusBadge(r.status) + '</div>' +
@@ -1128,7 +1093,7 @@ function formatUkuran(byte) {
                   '<td class="py-3 text-center font-extrabold text-slate-900 dark:text-white">' + t.nama + '</td>' +
                   '<td class="py-3 text-center text-slate-500 dark:text-emerald-300/80">' + t.rincian + '</td>' +
                   '<td class="py-3 text-center">' + statusBadge(t.status) + '</td>' +
-                  '<td class="py-3 text-center font-extrabold ' + (t.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500') + '">' + (t.poin >= 0 ? '+' : '') + t.poin + ' pts</td>' +
+                  '<td class="py-3 text-center">' + poinBadge(t.poin) + '</td>' +
                 '</tr>'
               ).join('')
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada transaksi warga</td></tr>';
@@ -1137,14 +1102,13 @@ function formatUkuran(byte) {
         if (dashCards) {
           dashCards.innerHTML = transaksi.length > 0
             ? transaksi.map(t => {
-                const poinCls = t.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500';
                 return '<div class="dash-card rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-4 space-y-2.5">' +
                   '<div class="flex items-start justify-between gap-3">' +
                     '<div class="min-w-0">' +
                       '<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-emerald-400">' + t.tanggal + '</p>' +
                       '<p class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5 break-words">' + t.nama + '</p>' +
                     '</div>' +
-                    '<span class="shrink-0 font-extrabold text-xs ' + poinCls + '">' + (t.poin >= 0 ? '+' : '') + t.poin + ' pts</span>' +
+                    poinBadge(t.poin, 'shrink-0 text-xs') +
                   '</div>' +
                   '<p class="text-xs text-slate-500 dark:text-emerald-300/80 leading-relaxed break-words">' + t.rincian + '</p>' +
                   '<div>' + statusBadge(t.status) + '</div>' +
@@ -1168,10 +1132,21 @@ function formatUkuran(byte) {
       return '<span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-extrabold text-[10px] rounded-full border border-transparent dark:border-slate-800">' + (s || '-') + '</span>';
     }
 
-    // Tampilan placeholder (skeleton) untuk halaman riwayat. Dipakai saat
-    // data belum ada di DOM: saat pertama dibuka maupun saat muat ulang
-    // setelah riwayat kedaluwarsa (setor/tukar/logout), supaya user selalu
-    // mendapat umpan balik "sedang memuat".
+    /**
+     * Label poin untuk tabel dan kartu riwayat.
+     *
+     * Setoran yang ditolak petugas tidak menambah saldo warga, jadi nilainya
+     * 0 dan ditulis "+0 pts". Warnanya tetap hijau seperti poin positif
+     * lainnya, karena kolom poin memang bergaya hijau dan status "Ditolak"
+     * sudah ditampilkan lewat badge sendiri.
+     */
+    function poinBadge(poin, extraClass) {
+      const n = Number(poin) || 0;
+      const cls = n >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500';
+      return '<span class="font-extrabold ' + (extraClass || '') + ' ' + cls + '">'
+        + (n >= 0 ? '+' : '') + n + ' pts</span>';
+    }
+
     function renderRiwayatSkeleton() {
       const bar = (w, extra) => '<div class="h-3 ' + w + ' rounded bg-slate-200/80 dark:bg-emerald-900/60 animate-pulse' + (extra || '') + '"></div>';
       const badgeBar = '<div class="h-5 w-20 rounded-full bg-slate-200/80 dark:bg-emerald-900/60 animate-pulse"></div>';
@@ -1208,22 +1183,15 @@ function formatUkuran(byte) {
     }
 
     async function loadRiwayat(force = false) {
-      // Riwayat yang sudah pernah dimuat tidak diambil ulang setiap kali menu
-      // diklik -- kontennya masih tersimpan di DOM. Pemaksaan pembaruan
-      // (`force = true`) dipakai setelah aksi yang menambah riwayat baru
-      // (setor sampah / tukar poin).
       if (riwayatLoaded && !force) return;
 
       const seq = ++riwayatFetchSeq;
 
-      // Tampilkan skeleton selagi menunggu respons server.
       renderRiwayatSkeleton();
 
       try {
         const res = await apiFetch('/riwayat');
 
-        // Respons lama boleh diabaikan kalau ada permintaan lebih baru
-        // (mis. user klik menu saat permintaan sebelumnya masih berjalan).
         if (seq !== riwayatFetchSeq) return;
 
         const tbody = document.getElementById('tbl-riwayat-body');
@@ -1238,7 +1206,7 @@ function formatUkuran(byte) {
                   '<td class="py-3.5 font-extrabold text-slate-900 dark:text-white">' + (r.jenis || '').replace(/_/g, ' ') + '</td>' +
                   '<td class="py-3.5 text-slate-500 dark:text-emerald-300/80">' + r.rincian + '</td>' +
                   '<td class="py-3.5">' + statusBadge(r.status) + '</td>' +
-                  '<td class="py-3.5 text-right font-extrabold ' + (r.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500') + '">' + (r.poin >= 0 ? '+' : '') + r.poin + ' pts</td>' +
+                  '<td class="py-3.5 text-right">' + poinBadge(r.poin) + '</td>' +
                 '</tr>'
               ).join('')
             : '<tr class="empty-state-row"><td colspan="5" class="py-6 text-center text-slate-400 dark:text-emerald-400 text-xs font-medium">Belum ada aktivitas warga</td></tr>';
@@ -1247,14 +1215,13 @@ function formatUkuran(byte) {
         if (cards) {
           cards.innerHTML = rows.length > 0
             ? rows.map(r => {
-                const poinCls = r.poin >= 0 ? 'text-brand-600 dark:text-brand-300' : 'text-rose-500';
                 return '<div class="riwayat-card rounded-2xl border border-slate-200/80 dark:border-emerald-800/70 bg-slate-50/70 dark:bg-brand-950/40 p-4 space-y-2.5">' +
                   '<div class="flex items-start justify-between gap-3">' +
                     '<div class="min-w-0">' +
                       '<p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-emerald-400">' + r.tanggal + '</p>' +
                       '<p class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight mt-0.5 break-words">' + (r.jenis || '').replace(/_/g, ' ') + '</p>' +
                     '</div>' +
-                    '<span class="shrink-0 font-extrabold text-xs ' + poinCls + '">' + (r.poin >= 0 ? '+' : '') + r.poin + ' pts</span>' +
+                    poinBadge(r.poin, 'shrink-0 text-xs') +
                   '</div>' +
                   '<p class="text-xs text-slate-500 dark:text-emerald-300/80 leading-relaxed break-words">' + r.rincian + '</p>' +
                   '<div>' + statusBadge(r.status) + '</div>' +
@@ -1269,8 +1236,6 @@ function formatUkuran(byte) {
         if (seq !== riwayatFetchSeq) return;
         console.warn('Gagal memuat riwayat:', err);
 
-        // Gagal dimuat: skeleton diganti pesan galat, dan `riwayatLoaded`
-        // tetap false supaya kunjungan berikutnya mencoba lagi.
         const tbody = document.getElementById('tbl-riwayat-body');
         const cards = document.getElementById('cards-riwayat');
         const pesan = 'Gagal memuat riwayat. Coba lagi';
@@ -1293,7 +1258,6 @@ function formatUkuran(byte) {
       const inputFoto = document.getElementById('ep-upload-foto');
       const hapusFoto = document.getElementById('ep-hapus-foto');
 
-      // Bersihkan sisa pilihan berkas dari kunjungan sebelumnya.
       if (inputFoto) inputFoto.value = '';
       uploadedFotoProses = null;
       fotoProfilDihapus = false;
@@ -1303,7 +1267,6 @@ function formatUkuran(byte) {
         previewImg.src = uploadedFotoDataUrl;
         previewImg.classList.remove('hidden');
         previewIcon.classList.add('hidden');
-        // Tombol hapus hanya muncul kalau memang ada foto di server.
         if (hapusFoto) hapusFoto.classList.remove('hidden');
       } else {
         previewImg.classList.add('hidden');
@@ -1440,9 +1403,6 @@ function formatUkuran(byte) {
       const modal = document.getElementById('modal-notif');
       if (!modal) return;
       modal.classList.add('hidden');
-      // Kembalikan z-index ke default. Pesan "sesi berakhir" menaikkan
-      // z-70 supaya menutupi layar login; tanpa dikembalikan, modal
-      // berikutnya akan ikut melayang di atas semua layar.
       modal.classList.remove('z-[70]');
     }
 
@@ -2034,8 +1994,6 @@ function formatUkuran(byte) {
           if (res.success) {
             userPoin -= item.poin;
             item.stok -= 1;
-            // Muat ulang riwayat di latar belakang: data di DOM langsung
-            // segar sehingga menu "Riwayat Aktivitas" tetap instan diklik.
             loadRiwayat(true);
             
             await loadInitialData();
@@ -2373,8 +2331,6 @@ function formatUkuran(byte) {
         });
         
         if (res.success) {
-          // Muat ulang riwayat di latar belakang supaya menu "Riwayat
-          // Aktivitas" langsung menampilkan setoran baru tanpa jeda.
           loadRiwayat(true);
           showModernModal('success', 'Terkirim', 'Laporan setoran berhasil dikirim', () => {
             document.getElementById('setor-kategori').value = '';

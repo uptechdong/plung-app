@@ -178,19 +178,21 @@ class SetoranController extends Controller
             'status' => 'required|in:diterima,ditolak',
         ]);
 
-        $totalBerubah = ($data['status'] === 'diterima') !== ($setoran->status === 'diterima');
+        $sebelumnyaDiterima = $setoran->status === 'diterima';
+        $baruDiterima = $data['status'] === 'diterima';
+
+        $totalBerubah = $baruDiterima !== $sebelumnyaDiterima;
         if ($totalBerubah) {
             $this->peringkat->snapshot();
         }
 
         $setoran->update(['status' => $data['status']]);
 
-        if ($data['status'] === 'diterima') {
-            $user = $setoran->user;
-
-            if ($user) {
-                $user->increment('poin', $setoran->poin);
-            }
+        $user = $setoran->user;
+        if ($user && $baruDiterima && ! $sebelumnyaDiterima) {
+            $user->increment('poin', $setoran->poin);
+        } elseif ($user && ! $baruDiterima && $sebelumnyaDiterima) {
+            $user->decrement('poin', $setoran->poin);
         }
 
         try {
@@ -222,10 +224,6 @@ class SetoranController extends Controller
     {
         $user = Auth::user();
 
-        // Eager loading: satu query untuk riwayat + satu query untuk seluruh
-        // setoran + satu query untuk seluruh penukaran yang dirujuk.
-        // Sebelumnya tiap baris memicu query sendiri (N+1) sehingga halaman
-        // riwayat terasa jeda saat dibuka.
         $riwayat = $user->riwayatAktivitas()
             ->with(['setoran:id,status', 'penukaran:id,kode_kupon,diambil'])
             ->orderByDesc('created_at')
@@ -253,7 +251,7 @@ class SetoranController extends Controller
                     'jenis' => $jenis,
                     'rincian' => $rincian,
                     'status' => $status,
-                    'poin' => (int) $r->poin,
+                    'poin' => $status === 'ditolak' ? 0 : (int) $r->poin,
                 ];
             });
 

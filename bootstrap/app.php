@@ -17,11 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Railway (dan hosting lain di belakang reverse proxy) mengirim
-        // X-Forwarded-Proto: https, tapi $_SERVER['HTTPS'] tidak di-set.
-        // Tanpa trustProxies, UrlGenerator menganggap request-nya http dan
-        // membuat URL aset jadi http://, yang diblokir browser sebagai mixed
-        // content sehingga CSS tidak termuat sama sekali.
         $middleware->trustProxies(at: '*');
 
         $middleware->append(KeamananHeader::class);

@@ -90,7 +90,7 @@ class DashboardController extends Controller
                 'kategori' => $s->kategori ? $s->kategori->nama : '-',
                 'berat' => ((float) $s->berat == (int) $s->berat ? (int) $s->berat : (float) $s->berat) . ' ' . $s->satuan,
                 'status' => $s->status,
-                'poin' => (int) $s->poin,
+                'poin' => $s->status === 'ditolak' ? 0 : (int) $s->poin,
             ]);
 
         $bulanan = $this->getBulananData($user->id);
@@ -342,7 +342,7 @@ class DashboardController extends Controller
                 'nama' => $s->user ? $s->user->nama : '-',
                 'rincian' => (((float) $s->berat == (int) $s->berat ? (int) $s->berat : (float) $s->berat) . ' ' . $s->satuan . ' ' . ($s->kategori ? $s->kategori->nama : '')),
                 'status' => $s->status,
-                'poin' => (int) $s->poin,
+                'poin' => $s->status === 'ditolak' ? 0 : (int) $s->poin,
             ]);
 
         $bulanan = $this->getBulananDataRT();
