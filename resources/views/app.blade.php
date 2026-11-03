@@ -1643,18 +1643,12 @@ function formatUkuran(byte) {
       showModernModal('confirm', 'Hapus Warga', 'Hapus akun ' + w.nama
         + '? ', async () => {
         try {
-          const res = await apiFetch('/warga/' + id, { method: 'DELETE' });
+          await apiFetch('/warga/' + id, { method: 'DELETE' });
           listWarga = listWarga.filter(item => item.id !== id);
           renderDaftarWarga();
           renderTop3Warga(listWarga);
 
-          const t = (res.data && res.data.transaksi_dihapus) || {};
-          const total = (t.setoran || 0) + (t.penukaran || 0) + (t.riwayat || 0);
-          const info = total > 0
-            ? ' Beserta ' + total + ' transaksi (setoran, kupon, riwayat).'
-            : '';
-
-          showModernModal('success', 'Terhapus', 'Data warga berhasil dihapus' + info);
+          showModernModal('success', 'Terhapus', 'Data warga berhasil dihapus');
         } catch (err) {
           showModernModal('danger', 'Gagal', 'Gagal menghapus data warga');
         }
@@ -2004,7 +1998,7 @@ function formatUkuran(byte) {
             renderRewardPengurusList();
             renderKuponPengurus();
             
-            showModernModal('success', 'Berhasil', res.message || 'Kupon ' + item.nama + ' telah terbit Silakan ambil di Balai RT');
+            showModernModal('success', 'Berhasil', res.message || 'Kupon ' + item.nama + ' telah terbit');
           } else {
             showModernModal('danger', 'Gagal', res.message || 'Gagal menukar poin');
           }

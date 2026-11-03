@@ -123,7 +123,7 @@ class RewardController extends Controller
         return response()->json([
             'success' => true,
             'kode_kupon' => $kode,
-            'message' => "Kupon {$reward->nama} [{$kode}] telah terbit Silakan ambil di Balai RT",
+            'message' => "Kupon {$reward->nama} [{$kode}] telah terbit",
         ]);
     }
 }
